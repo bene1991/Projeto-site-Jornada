@@ -46,12 +46,12 @@
 
   /* botões de link */
   .links{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:26px}
-  .lnk{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:17px 18px;
+  .lnk{display:flex;align-items:center;justify-content:center;width:100%;padding:17px 44px;
     border-radius:30px;text-decoration:none;font-weight:700;font-size:16px;text-align:center;
     transition:transform .15s, box-shadow .15s, filter .15s;position:relative}
   .lnk:hover{transform:translateY(-2px)}
   .lnk:active{transform:translateY(0)}
-  .lnk svg{width:20px;height:20px;flex:none}
+  .lnk > svg{width:20px;height:20px;flex:none;position:absolute;left:22px;top:50%;transform:translateY(-50%)}
   .lnk .txt{display:flex;flex-direction:column;align-items:center;line-height:1.2}
   .lnk .txt small{font-weight:600;font-size:12px;opacity:.75;margin-top:1px}
   .lnk.glass{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);color:#fff;
@@ -78,7 +78,7 @@
     <h1 id="name">JORNADA360</h1>
     <div class="tag" id="tag">AGÊNCIA DE VIAGEM</div>
     <p class="bio">Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️</p>
-    <span class="live" id="badge"><span class="dot"></span> <span id="badgeTxt">PROMOÇÕES ATIVAS AGORA</span></span>
+    <span class="live" id="badge" style="display:none"><span class="dot"></span> <span id="badgeTxt"></span></span>
 
     <nav class="links" id="links"></nav>
 
@@ -114,8 +114,7 @@ async function init(){
   if(s.tag)document.getElementById('tag').textContent=s.tag;
   if(s.logo)document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;
   if(s.bioBio)document.querySelector('.bio').textContent=s.bioBio;
-  if(s.bioBadge!==undefined){const b=document.getElementById('badge');
-    if(s.bioBadge){document.getElementById('badgeTxt').textContent=s.bioBadge;}else{b.style.display='none';}}
+  if(s.bioBadge){document.getElementById('badgeTxt').textContent=s.bioBadge;document.getElementById('badge').style.display='';}
   const wa=(s.wa||'').replace(/\D/g,'');
   // fundo com foto (véu azul por cima pra legibilidade)
   if(s.bioBg){document.body.style.background=
