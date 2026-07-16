@@ -123,7 +123,14 @@ async function init(){
   if(s.bioBg){document.body.style.background=
     `linear-gradient(180deg, rgba(6,40,68,.66), rgba(4,28,48,.88)), url("${s.bioBg}") center/cover fixed`;}
 
-  const resolve=u=>u==='wa'?(wa?`https://wa.me/${wa}?text=${encodeURIComponent('Olá! Vim pelo link da bio 😊')}`:''):(u==='/'?'/':u);
+  const resolve=u=>{
+    u=(u||'').trim();
+    if(u==='wa')return wa?`https://wa.me/${wa}?text=${encodeURIComponent('Olá! Vim pelo link da bio 😊')}`:'';
+    if(u==='/'||u.startsWith('/'))return u;
+    if(/^(https?:|mailto:|tel:)/i.test(u))return u;   // já tem protocolo
+    if(!u)return '';
+    return 'https://'+u;                               // completa o https:// que faltou
+  };
   const links=(s.bioLinks&&s.bioLinks.length?s.bioLinks:[]).filter(l=>resolve(l.url));
   document.getElementById('links').innerHTML=links.map(l=>{
     const url=resolve(l.url),ext=url.startsWith('http');
