@@ -45,22 +45,20 @@
   @keyframes p{to{box-shadow:0 0 0 9px rgba(91,227,154,0)}}
 
   /* botões de link */
-  .links{width:100%;display:flex;flex-direction:column;gap:13px;margin-top:26px}
-  .lnk{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;border-radius:16px;
-    background:rgba(255,255,255,.96);color:var(--brand);text-decoration:none;font-weight:700;font-size:15.5px;
-    box-shadow:0 8px 22px rgba(0,0,0,.16);transition:transform .15s, box-shadow .15s;position:relative}
-  .lnk:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.24)}
+  .links{width:100%;display:flex;flex-direction:column;gap:14px;margin-top:26px}
+  .lnk{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:17px 18px;
+    border-radius:30px;text-decoration:none;font-weight:700;font-size:16px;text-align:center;
+    transition:transform .15s, box-shadow .15s, filter .15s;position:relative}
+  .lnk:hover{transform:translateY(-2px)}
   .lnk:active{transform:translateY(0)}
-  .lnk .ico{width:40px;height:40px;border-radius:11px;background:var(--brand);color:#fff;
-    display:grid;place-items:center;flex:none}
-  .lnk .ico svg{width:21px;height:21px}
-  .lnk .txt{flex:1;display:flex;flex-direction:column;align-items:center;line-height:1.25;text-align:center}
-  .lnk .txt small{font-weight:600;font-size:12px;color:#5C6B7A}
-  .lnk .arrow{margin-left:auto;opacity:.35}
-  /* destaque (promoções) */
-  .lnk.feat{background:var(--gold);color:#20180a}
-  .lnk.feat .ico{background:rgba(0,0,0,.15);color:#20180a}
-  .lnk.feat .txt small{color:#5a4a1e}
+  .lnk svg{width:20px;height:20px;flex:none}
+  .lnk .txt{display:flex;flex-direction:column;align-items:center;line-height:1.2}
+  .lnk .txt small{font-weight:600;font-size:12px;opacity:.75;margin-top:1px}
+  .lnk.glass{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.30);color:#fff;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .lnk.glass:hover{background:rgba(255,255,255,.18)}
+  .lnk.solid{box-shadow:0 10px 26px rgba(0,0,0,.22)}
+  .lnk.solid:hover{filter:brightness(1.05)}
 
   /* redes sociais */
   .social{display:flex;gap:14px;margin-top:26px}
@@ -80,7 +78,7 @@
     <h1 id="name">JORNADA360</h1>
     <div class="tag" id="tag">AGÊNCIA DE VIAGEM</div>
     <p class="bio">Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️</p>
-    <span class="live"><span class="dot"></span> PROMOÇÕES ATIVAS AGORA</span>
+    <span class="live" id="badge"><span class="dot"></span> <span id="badgeTxt">PROMOÇÕES ATIVAS AGORA</span></span>
 
     <nav class="links" id="links"></nav>
 
@@ -91,6 +89,8 @@
 
 <script>
 const ICONS={
+  spark:'<path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z"/><path d="M18.5 14l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/>',
+  bell:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
   fire:'<path d="M12 2s5 4 5 9a5 5 0 01-10 0c0-2 1-3 1-3s0 2 2 2c0-3 2-5 2-8z"/>',
   wa:'<path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2z"/>',
   ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>',
@@ -101,10 +101,10 @@ const ICONS={
   arrow:'<path d="M9 6l6 6-6 6"/>'
 };
 const svg=(p,fill)=>`<svg viewBox="0 0 24 24" fill="${fill||'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-// texto preto ou branco conforme a cor do botão
-function textOn(hex){hex=(hex||'#08518b').replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
-  const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
-  return (0.299*r+0.587*g+0.114*b)>165?'#152230':'#ffffff';}
+function rgbOf(hex){hex=(hex||'#08518b').replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
+  return [parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)];}
+function textOn(hex){const[r,g,b]=rgbOf(hex);return (0.299*r+0.587*g+0.114*b)>165?'#152230':'#ffffff';}
+function adjust(hex,amt){const c=rgbOf(hex).map(v=>Math.max(0,Math.min(255,v+amt)));return `rgb(${c[0]},${c[1]},${c[2]})`;}
 
 async function init(){
   document.getElementById('year').textContent=new Date().getFullYear();
@@ -114,19 +114,23 @@ async function init(){
   if(s.tag)document.getElementById('tag').textContent=s.tag;
   if(s.logo)document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;
   if(s.bioBio)document.querySelector('.bio').textContent=s.bioBio;
+  if(s.bioBadge!==undefined){const b=document.getElementById('badge');
+    if(s.bioBadge){document.getElementById('badgeTxt').textContent=s.bioBadge;}else{b.style.display='none';}}
   const wa=(s.wa||'').replace(/\D/g,'');
   // fundo com foto (véu azul por cima pra legibilidade)
   if(s.bioBg){document.body.style.background=
-    `linear-gradient(180deg, rgba(6,40,68,.72), rgba(4,28,48,.90)), url("${s.bioBg}") center/cover fixed`;}
+    `linear-gradient(180deg, rgba(6,40,68,.66), rgba(4,28,48,.88)), url("${s.bioBg}") center/cover fixed`;}
 
   const resolve=u=>u==='wa'?(wa?`https://wa.me/${wa}?text=${encodeURIComponent('Olá! Vim pelo link da bio 😊')}`:''):(u==='/'?'/':u);
   const links=(s.bioLinks&&s.bioLinks.length?s.bioLinks:[]).filter(l=>resolve(l.url));
   document.getElementById('links').innerHTML=links.map(l=>{
-    const bg=l.color||'#08518b',fg=textOn(bg),url=resolve(l.url),ext=url.startsWith('http');
-    return `<a class="lnk" style="background:${bg};color:${fg}" href="${url}" ${ext?'target="_blank" rel="noopener"':''}>
-      <span class="ico" style="background:rgba(0,0,0,.16);color:${fg}">${svg(ICONS[l.icon]||ICONS.link)}</span>
-      <span class="txt">${l.title||''}${l.sub?`<small style="color:${fg};opacity:.7">${l.sub}</small>`:''}</span>
-      <span class="arrow" style="color:${fg}">${svg(ICONS.arrow)}</span>
+    const url=resolve(l.url),ext=url.startsWith('http');
+    let cls='glass',style='';
+    if(l.style==='solid'){const bg=l.color||'#08518b',fg=textOn(bg);
+      cls='solid';style=`background:linear-gradient(135deg, ${adjust(bg,22)}, ${adjust(bg,-6)});color:${fg}`;}
+    return `<a class="lnk ${cls}" style="${style}" href="${url}" ${ext?'target="_blank" rel="noopener"':''}>
+      ${svg(ICONS[l.icon]||ICONS.link)}
+      <span class="txt">${l.title||''}${l.sub?`<small>${l.sub}</small>`:''}</span>
     </a>`;}).join('');
 
   // redes no rodapé (whatsapp + instagram, se houver)

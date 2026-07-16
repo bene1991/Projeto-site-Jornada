@@ -399,10 +399,16 @@
         <input type="file" id="fileBioBg" accept="image/*" hidden onchange="onBioBg(event)">
         <button class="ghost-btn" id="rmBioBg" style="align-self:flex-start;margin-top:8px;display:none" onclick="removeBioBg()">Remover fundo</button>
       </div>
-      <div class="field"><label>Frase da bio</label><textarea id="sBioBio"></textarea></div>
-      <div class="field"><label>Botões (arraste a cor pra personalizar cada um)</label>
+      <div class="row2">
+        <div class="field"><label>Selo (topo)</label><input id="sBioBadge" placeholder="Promoções ativas agora"></div>
+        <div class="field"><label>Frase da bio</label><input id="sBioBio"></div>
+      </div>
+      <div class="field"><label>Botões</label>
         <div id="bioList"></div>
-        <button class="ghost-btn" onclick="addBioLink()" style="align-self:flex-start;margin-top:4px">+ Adicionar botão</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+          <button class="ghost-btn" onclick="addBioLink()">+ Adicionar botão</button>
+          <button class="ghost-btn" onclick="restoreBioTemplate()">↺ Modelo praia (5 botões)</button>
+        </div>
       </div>
       <button class="save" onclick="saveBio()">Salvar links da bio</button>
     </div>
@@ -519,13 +525,17 @@ const defaults={
   stat2:'10x', stat2l:'Sem juros', stat3:'Rio Preto', stat3l:'Nossa base',
   wa:'', footer:'Feito com ♥ pela Jornada360 — compartilhe este link com seus clientes.',
   logoSize:50, logoBg:null,
-  bioBg:null, bioBio:'Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️',
+  bioBg:null, bioBadge:'Promoções ativas agora',
+  bioBio:'Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️',
   bioLinks:[
-    {title:'Ver promoções ativas', sub:'Todos os pacotes do momento', url:'/', icon:'fire', color:'#C9A24B'},
-    {title:'Falar no WhatsApp', sub:'Atendimento e reservas', url:'wa', icon:'wa', color:'#25D366'},
-    {title:'Instagram', sub:'Bastidores e destinos', url:'https://instagram.com/', icon:'ig', color:'#ffffff'}
+    {title:'Solicitar orçamento', sub:'', url:'wa', icon:'spark', color:'#E9B949', style:'solid'},
+    {title:'Ver promoções ativas', sub:'', url:'/', icon:'fire', color:'#08518b', style:'glass'},
+    {title:'Falar no WhatsApp', sub:'', url:'wa', icon:'wa', color:'#08518b', style:'glass'},
+    {title:'Grupo de Promoções', sub:'', url:'https://', icon:'bell', color:'#08518b', style:'glass'},
+    {title:'Ver Instagram', sub:'', url:'https://instagram.com/', icon:'ig', color:'#08518b', style:'glass'}
   ]
 };
+const BIO_TEMPLATE=JSON.parse(JSON.stringify(defaults.bioLinks));
 let settings=Object.assign({},defaults);
 const seed=[
   {id:1,dest:'Gramado',cat:'Serra',date:'16 à 21 de setembro',origin:'S. J. do Rio Preto',hotel:'Pousada Boschetti',meal:'Café da Manhã',x:'10',price:'165,35',img:null},
@@ -671,12 +681,13 @@ function loadAdminFields(){
   else{d.classList.remove('has');d.innerHTML='<span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span>';}
   // Links da bio
   document.getElementById('sBioBio').value=settings.bioBio||'';
+  document.getElementById('sBioBadge').value=settings.bioBadge||'';
   const bg=document.getElementById('dropBioBg');
   if(settings.bioBg){bg.classList.add('has');bg.innerHTML=`<img src="${settings.bioBg}" alt="fundo" style="object-fit:cover">`;document.getElementById('rmBioBg').style.display='';}
   else{bg.classList.remove('has');bg.innerHTML='<span>🏖️ Toque para enviar a foto de fundo<br><small>opcional — fica atrás com um véu azul por cima</small></span>';document.getElementById('rmBioBg').style.display='none';}
   renderBioAdmin();
 }
-const BIO_ICONS=['fire','wa','ig','map','mail','doc','link'];
+const BIO_ICONS=['spark','fire','wa','bell','ig','map','mail','doc','link'];
 function renderBioAdmin(){
   const el=document.getElementById('bioList');const L=settings.bioLinks||[];
   el.innerHTML=L.map((l,i)=>`<div class="bio-row">
@@ -684,9 +695,13 @@ function renderBioAdmin(){
     <div class="bio-fields">
       <input value="${escA(l.title)}" placeholder="Título" oninput="bioSet(${i},'title',this.value)">
       <div class="two">
-        <input value="${escA(l.sub)}" placeholder="Descrição" oninput="bioSet(${i},'sub',this.value)">
-        <select onchange="bioSet(${i},'icon',this.value)">${BIO_ICONS.map(ic=>`<option value="${ic}" ${l.icon===ic?'selected':''}>${ic}</option>`).join('')}</select>
+        <select onchange="bioSet(${i},'icon',this.value)" title="Ícone">${BIO_ICONS.map(ic=>`<option value="${ic}" ${l.icon===ic?'selected':''}>${ic}</option>`).join('')}</select>
+        <select onchange="bioSet(${i},'style',this.value)" title="Estilo">
+          <option value="glass" ${(l.style||'glass')==='glass'?'selected':''}>Vidro (translúcido)</option>
+          <option value="solid" ${l.style==='solid'?'selected':''}>Cor sólida</option>
+        </select>
       </div>
+      <input value="${escA(l.sub)}" placeholder="Descrição (opcional)" oninput="bioSet(${i},'sub',this.value)">
       <input value="${escA(l.url)}" placeholder="Link (https://... ou 'wa' pro WhatsApp, '/' pras promoções)" oninput="bioSet(${i},'url',this.value)">
     </div>
     <div class="rowacts">
@@ -700,12 +715,13 @@ function escA(s){return String(s==null?'':s).replace(/"/g,'&quot;');}
 function bioSet(i,k,v){settings.bioLinks[i][k]=v;}
 function bioDel(i){settings.bioLinks.splice(i,1);renderBioAdmin();}
 function bioMove(i,d){const L=settings.bioLinks,j=i+d;if(j<0||j>=L.length)return;[L[i],L[j]]=[L[j],L[i]];renderBioAdmin();}
-function addBioLink(){settings.bioLinks.push({title:'Novo botão',sub:'',url:'https://',icon:'link',color:'#08518b'});renderBioAdmin();}
+function addBioLink(){settings.bioLinks.push({title:'Novo botão',sub:'',url:'https://',icon:'link',color:'#08518b',style:'glass'});renderBioAdmin();}
+function restoreBioTemplate(){settings.bioLinks=JSON.parse(JSON.stringify(BIO_TEMPLATE));renderBioAdmin();toast('Modelo aplicado — ajuste e salve');}
 function onBioBg(e){readImg(e,async d=>{const c=await compress(d,1400,.8,'image/jpeg');toast('Enviando...');
   const url=await uploadImage(c,'biobg');if(url){settings.bioBg=url;const bg=document.getElementById('dropBioBg');
     bg.classList.add('has');bg.innerHTML=`<img src="${url}" style="object-fit:cover">`;document.getElementById('rmBioBg').style.display='';toast('Fundo enviado ✓');}});}
 function removeBioBg(){settings.bioBg=null;loadAdminFields();}
-async function saveBio(){settings.bioBio=val('sBioBio');const ok=await persist();toast(ok?'Links da bio salvos ✓':'Erro ao salvar — verifique o login');}
+async function saveBio(){settings.bioBio=val('sBioBio');settings.bioBadge=val('sBioBadge');const ok=await persist();toast(ok?'Links da bio salvos ✓':'Erro ao salvar — verifique o login');}
 function saveSettings(){
   const m={sName:'name',sTag:'tag',sEyebrow:'eyebrow',sTitle:'title',sSub:'sub',
     sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer'};
