@@ -116,7 +116,8 @@ async function init(){
   const nm=document.getElementById('name'),tg=document.getElementById('tag');
   if(s.bioName!==undefined){nm.textContent=s.bioName;nm.style.display=s.bioName?'':'none';}
   if(s.bioTag!==undefined){tg.textContent=s.bioTag;tg.style.display=s.bioTag?'':'none';}
-  if(s.logo)document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;
+  if(s.logo){const z=s.bioLogoSize||74;
+    document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo" style="width:${z}%;height:${z}%;padding:0">`;}
   if(s.bioBio)document.querySelector('.bio').textContent=s.bioBio;
   if(s.bioBadge){document.getElementById('badgeTxt').textContent=s.bioBadge;document.getElementById('badge').style.display='';}
   const wa=(s.wa||'').replace(/\D/g,'');
