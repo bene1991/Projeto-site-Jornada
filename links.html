@@ -113,8 +113,8 @@ async function init(){
   document.getElementById('year').textContent=new Date().getFullYear();
   let s={};
   try{const r=await sb.from('settings').select('data').eq('id',1).maybeSingle();s=(r.data&&r.data.data)||{};}catch(e){}
-  if(s.name)document.getElementById('name').textContent=s.name;
-  if(s.tag)document.getElementById('tag').textContent=s.tag;
+  document.getElementById('name').textContent=s.bioName||s.name||'JORNADA360';
+  document.getElementById('tag').textContent=s.bioTag||s.tag||'AGÊNCIA DE VIAGEM';
   if(s.logo)document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;
   if(s.bioBio)document.querySelector('.bio').textContent=s.bioBio;
   if(s.bioBadge){document.getElementById('badgeTxt').textContent=s.bioBadge;document.getElementById('badge').style.display='';}
