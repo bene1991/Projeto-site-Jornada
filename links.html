@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jornada360 · Links</title>
+<meta name="description" content="Todos os canais da Jornada360 Agência de Viagem: promoções ativas, WhatsApp, Instagram e mais.">
+<meta name="theme-color" content="#08518b">
+<meta property="og:title" content="Jornada360 · Links">
+<meta property="og:description" content="Promoções ativas, WhatsApp, Instagram e mais — tudo num lugar só.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2308518b'/%3E%3Cpath d='M50 20c-11 0-20 9-20 20 0 14 20 30 20 30s20-16 20-30c0-11-9-20-20-20zm0 27a7 7 0 110-14 7 7 0 010 14z' fill='%23fff'/%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://juyffxwtcgriptxedhim.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp1eWZmeHd0Y2dyaXB0eGVkaGltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyMTIyOTgsImV4cCI6MjA5OTc4ODI5OH0.uY6qbHbJCujN-7D2LgrXiJfW54jZXwU0uRNLfEyDICY';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<style>
+  :root{--brand:#08518b;--brand-deep:#052f52;--gold:#C9A24B}
+  *{box-sizing:border-box;margin:0}
+  html,body{overflow-x:hidden}
+  body{min-height:100dvh;font-family:"Segoe UI Rounded","SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color:#fff;background:
+      radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,.10), transparent 60%),
+      linear-gradient(170deg,var(--brand) 0%, var(--brand-deep) 100%);
+    background-attachment:fixed;
+    display:flex;flex-direction:column;align-items:center;
+    padding:calc(38px + env(safe-area-inset-top)) 20px calc(30px + env(safe-area-inset-bottom))}
+  .col{width:100%;max-width:460px;display:flex;flex-direction:column;align-items:center}
+
+  /* cabeçalho */
+  .logo{width:112px;height:112px;border-radius:26px;background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;overflow:hidden;
+    box-shadow:0 12px 34px rgba(0,0,0,.28);margin-bottom:16px}
+  .logo img{width:100%;height:100%;object-fit:contain;padding:12px}
+  .logo svg{width:66px;height:66px}
+  h1{font-size:25px;font-weight:800;letter-spacing:.3px;text-align:center}
+  .tag{font-size:13px;letter-spacing:2.5px;text-transform:uppercase;opacity:.8;margin-top:2px;text-align:center}
+  .bio{font-size:14.5px;opacity:.92;text-align:center;margin:14px 6px 4px;line-height:1.55;max-width:36ch}
+  .live{display:inline-flex;align-items:center;gap:8px;background:rgba(30,158,106,.22);
+    border:1px solid rgba(91,227,154,.5);color:#c9f6e0;padding:6px 14px;border-radius:999px;
+    font-size:12px;font-weight:700;letter-spacing:.5px;margin-top:14px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#5BE39A;box-shadow:0 0 0 0 rgba(91,227,154,.7);animation:p 2s infinite}
+  @keyframes p{to{box-shadow:0 0 0 9px rgba(91,227,154,0)}}
+
+  /* botões de link */
+  .links{width:100%;display:flex;flex-direction:column;gap:13px;margin-top:26px}
+  .lnk{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;border-radius:16px;
+    background:rgba(255,255,255,.96);color:var(--brand);text-decoration:none;font-weight:700;font-size:15.5px;
+    box-shadow:0 8px 22px rgba(0,0,0,.16);transition:transform .15s, box-shadow .15s;position:relative}
+  .lnk:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.24)}
+  .lnk:active{transform:translateY(0)}
+  .lnk .ico{width:40px;height:40px;border-radius:11px;background:var(--brand);color:#fff;
+    display:grid;place-items:center;flex:none}
+  .lnk .ico svg{width:21px;height:21px}
+  .lnk .txt{display:flex;flex-direction:column;line-height:1.25;text-align:left}
+  .lnk .txt small{font-weight:600;font-size:12px;color:#5C6B7A}
+  .lnk .arrow{margin-left:auto;opacity:.35}
+  /* destaque (promoções) */
+  .lnk.feat{background:var(--gold);color:#20180a}
+  .lnk.feat .ico{background:rgba(0,0,0,.15);color:#20180a}
+  .lnk.feat .txt small{color:#5a4a1e}
+
+  /* redes sociais */
+  .social{display:flex;gap:14px;margin-top:26px}
+  .social a{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;color:#fff;transition:.15s}
+  .social a:hover{background:rgba(255,255,255,.24);transform:translateY(-2px)}
+  .social svg{width:22px;height:22px}
+  footer{margin-top:30px;font-size:12px;opacity:.6;text-align:center}
+  @media(max-width:360px){.logo{width:96px;height:96px}h1{font-size:22px}}
+</style>
+</head>
+<body>
+  <main class="col">
+    <div class="logo" id="logo">
+      <svg viewBox="0 0 100 100" fill="#fff"><path d="M50 8c-19 0-34 15-34 34 0 24 34 50 34 50s10-8 18-18L54 50a4 4 0 10-9-6L34 42c0-9 7-16 16-16 4 0 8 1 11 4l7-9C63 12 57 8 50 8z"/><path d="M62 20l6-8 4 12 12 3-11 6z"/></svg>
+    </div>
+    <h1 id="name">JORNADA360</h1>
+    <div class="tag" id="tag">AGÊNCIA DE VIAGEM</div>
+    <p class="bio">Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️</p>
+    <span class="live"><span class="dot"></span> PROMOÇÕES ATIVAS AGORA</span>
+
+    <nav class="links" id="links"></nav>
+
+    <div class="social" id="social"></div>
+
+    <footer>© <span id="year"></span> Jornada360 · Agência de Viagem</footer>
+  </main>
+
+<script>
+/* =========================================================
+   EDITE AQUI SEUS LINKS  (troque os # pelos endereços reais)
+   ========================================================= */
+const CONFIG = {
+  instagram: 'https://instagram.com/SEU_USUARIO',   // seu @ do Instagram
+  site:      '/',                                    // página de promoções (mesmo site)
+  maps:      '',                                     // link do Google Maps (opcional)
+  email:     '',                                     // seu e-mail (opcional)
+  // WhatsApp e logo são puxados do painel (Supabase) automaticamente
+};
+// Links extras opcionais — adicione quantos quiser
+const EXTRA_LINKS = [
+  // {title:'Catálogo de destinos', sub:'PDF completo', url:'https://...', icon:'doc'},
+];
+
+const ICONS={
+  fire:'<path d="M12 2s5 4 5 9a5 5 0 01-10 0c0-2 1-3 1-3s0 2 2 2c0-3 2-5 2-8z"/>',
+  wa:'<path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2z"/>',
+  ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>',
+  map:'<path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  doc:'<path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/>',
+  arrow:'<path d="M9 6l6 6-6 6"/>'
+};
+const svg=(p,fill)=>`<svg viewBox="0 0 24 24" fill="${fill||'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+
+async function init(){
+  document.getElementById('year').textContent=new Date().getFullYear();
+  // puxa logo, nome e WhatsApp do painel (Supabase)
+  let s={};
+  try{const r=await sb.from('settings').select('data').eq('id',1).maybeSingle();s=(r.data&&r.data.data)||{};}catch(e){}
+  if(s.name){document.getElementById('name').textContent=s.name;}
+  if(s.tag){document.getElementById('tag').textContent=s.tag;}
+  if(s.logo){document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;}
+  const wa=(s.wa||'').replace(/\D/g,'');
+
+  // monta os botões
+  const L=[];
+  L.push({title:'Ver promoções ativas', sub:'Todos os pacotes do momento', url:CONFIG.site, icon:'fire', feat:true});
+  if(wa) L.push({title:'Falar no WhatsApp', sub:'Atendimento e reservas', url:`https://wa.me/${wa}?text=${encodeURIComponent('Olá! Vim pelo link da bio 😊')}`, icon:'wa'});
+  if(CONFIG.instagram && !CONFIG.instagram.includes('SEU_USUARIO')) L.push({title:'Instagram', sub:'Bastidores e destinos', url:CONFIG.instagram, icon:'ig'});
+  if(CONFIG.maps) L.push({title:'Onde estamos', sub:'Ver no mapa', url:CONFIG.maps, icon:'map'});
+  if(CONFIG.email) L.push({title:'E-mail', sub:CONFIG.email, url:'mailto:'+CONFIG.email, icon:'mail'});
+  EXTRA_LINKS.forEach(x=>L.push(x));
+
+  document.getElementById('links').innerHTML=L.map(l=>`
+    <a class="lnk ${l.feat?'feat':''}" href="${l.url}" ${l.url.startsWith('http')?'target="_blank" rel="noopener"':''}>
+      <span class="ico">${svg(ICONS[l.icon]||ICONS.arrow)}</span>
+      <span class="txt">${l.title}<small>${l.sub||''}</small></span>
+      <span class="arrow">${svg(ICONS.arrow)}</span>
+    </a>`).join('');
+
+  // redes no rodapé
+  const soc=[];
+  if(wa) soc.push({url:`https://wa.me/${wa}`, icon:'wa'});
+  if(CONFIG.instagram && !CONFIG.instagram.includes('SEU_USUARIO')) soc.push({url:CONFIG.instagram, icon:'ig'});
+  if(CONFIG.email) soc.push({url:'mailto:'+CONFIG.email, icon:'mail'});
+  document.getElementById('social').innerHTML=soc.map(s=>`<a href="${s.url}" ${s.url.startsWith('http')?'target="_blank" rel="noopener"':''}>${svg(ICONS[s.icon])}</a>`).join('');
+}
+init();
+</script>
+</body>
+</html>
