@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jornada360 · Promoções ativas | Agência de Viagem em Rio Preto</title>
+<meta name="description" content="Promoções de viagens da Jornada360: pacotes com aéreo + hospedagem saindo de São José do Rio Preto, parcelados em até 10x. Veja todas as ofertas ativas e reserve pelo WhatsApp.">
+<meta name="keywords" content="agência de viagem, pacotes de viagem, promoção de viagem, Rio Preto, São José do Rio Preto, aéreo e hospedagem, Jornada360, viagens parceladas">
+<meta name="author" content="Jornada360 Agência de Viagem">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#08518b">
+<link rel="canonical" href="https://SEU-DOMINIO.com.br/">
+<!-- Open Graph (WhatsApp, Facebook, Instagram) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jornada360 · Promoções de viagem ativas">
+<meta property="og:description" content="Pacotes com aéreo + hospedagem saindo de Rio Preto, em até 10x. Confira as ofertas e reserve pelo WhatsApp.">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Jornada360">
+<meta property="og:url" content="https://SEU-DOMINIO.com.br/">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Jornada360 · Promoções de viagem ativas">
+<meta name="twitter:description" content="Pacotes com aéreo + hospedagem saindo de Rio Preto, em até 10x.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2308518b'/%3E%3Cpath d='M50 20c-11 0-20 9-20 20 0 14 20 30 20 30s20-16 20-30c0-11-9-20-20-20zm0 27a7 7 0 110-14 7 7 0 010 14z' fill='%23fff'/%3E%3C/svg%3E">
+<!-- Dados estruturados (Google) -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TravelAgency","name":"Jornada360","description":"Agência de viagem em São José do Rio Preto com pacotes de aéreo + hospedagem.","areaServed":"São José do Rio Preto, SP","url":"https://SEU-DOMINIO.com.br/"}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* ======= PREENCHA COM AS SUAS CHAVES DO SUPABASE ======= */
+  const SUPABASE_URL = 'https://SEU-PROJETO.supabase.co';
+  const SUPABASE_ANON_KEY = 'SUA-CHAVE-ANON-PUBLIC';
+  /* ======================================================= */
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+<style>
+  :root{
+    --brand:#08518b; --brand-deep:#063a63; --ice:#E8F1F9; --gold:#C9A24B;
+    --ok:#1E9E6A; --paper:#F5F7FA; --card:#FFFFFF; --ink:#152230; --muted:#5C6B7A;
+    --line:#E2E8F1; --shadow:0 10px 30px rgba(12,58,99,.10); --shadow-lg:0 24px 60px rgba(12,58,99,.18);
+    --r:20px; --maxw:1120px;
+  }
+  *{box-sizing:border-box}
+  html{color-scheme:light}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI Rounded","SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  button{font-family:inherit;cursor:pointer}
+  img{max-width:100%;display:block}
+  .hide{display:none !important}
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:var(--brand);color:#fff;box-shadow:0 4px 20px rgba(12,58,99,.25)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;min-height:66px;padding-top:8px;padding-bottom:8px;gap:16px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.5px;font-size:19px}
+  .brand small{display:block;font-size:9px;letter-spacing:3px;font-weight:600;opacity:.85;margin-top:-2px}
+  #logoBox,#logoBoxAdmin{display:inline-flex}
+  .logo{width:34px;height:34px;flex:none}
+  #logoBox img{width:auto;max-width:300px;object-fit:contain}
+  #logoBox.pill{background:#fff;border-radius:12px;padding:6px 10px;display:inline-flex}
+  #logoBoxAdmin img{height:40px;width:auto;max-width:180px;object-fit:contain}
+  .brand.logo-only{gap:0}
+  .icon-btn{background:rgba(255,255,255,.14);border:0;color:#fff;width:40px;height:40px;border-radius:12px;
+    font-size:16px;display:grid;place-items:center;transition:.15s}
+  .icon-btn:hover{background:rgba(255,255,255,.26)}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;background:radial-gradient(120% 140% at 90% -20%, rgba(255,255,255,.14), transparent 55%),
+      linear-gradient(160deg,var(--brand) 0%, var(--brand-deep) 100%);color:#fff;overflow:hidden}
+  .hero .wrap{padding:52px 20px 118px;position:relative;z-index:2}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.13);
+    border:1px solid rgba(255,255,255,.22);padding:6px 14px;border-radius:999px;font-size:12.5px;
+    letter-spacing:1.5px;text-transform:uppercase;font-weight:700}
+  .pulse{width:8px;height:8px;border-radius:50%;background:#5BE39A;box-shadow:0 0 0 0 rgba(91,227,154,.7);animation:pulse 2s infinite}
+  @keyframes pulse{to{box-shadow:0 0 0 9px rgba(91,227,154,0)}}
+  .hero h1{font-size:clamp(30px,5.4vw,50px);line-height:1.05;margin:18px 0 12px;font-weight:800;text-wrap:balance;max-width:16ch}
+  .hero p{font-size:clamp(15px,2.2vw,18px);max-width:52ch;opacity:.92;margin:0}
+  .hero-deco{position:absolute;inset:0;z-index:1;opacity:.5;pointer-events:none}
+  .stat-row{display:flex;gap:26px;margin-top:26px;flex-wrap:wrap}
+  .stat b{font-size:24px;display:block;font-weight:800}
+  .stat span{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;opacity:.8}
+
+  /* ---------- BOARD ---------- */
+  .board{margin-top:-74px;position:relative;z-index:5;padding-bottom:70px}
+  .toolbar{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+    padding:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:26px}
+  .search{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;background:var(--paper);
+    border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+  .search input{border:0;background:none;outline:none;color:var(--ink);font-size:15px;width:100%;font-family:inherit}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--muted);padding:9px 15px;border-radius:999px;
+    font-size:13.5px;font-weight:600;transition:.15s}
+  .chip:hover{border-color:var(--brand);color:var(--brand)}
+  .chip.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+  .promo{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.2s}
+  .promo:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+  .promo .ph{position:relative;aspect-ratio:1/1;background:var(--ice);overflow:hidden}
+  .promo .ph img{width:100%;height:100%;object-fit:cover}
+  .noimg{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    color:var(--muted);background:repeating-linear-gradient(45deg,var(--ice),var(--ice) 14px,transparent 14px,transparent 28px),var(--card)}
+  .noimg svg{width:34px;height:34px;opacity:.5}
+  .noimg span{font-size:13px;font-weight:700}
+  .badge{position:absolute;top:12px;left:12px;background:rgba(12,58,99,.9);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:.6px;padding:6px 11px;border-radius:999px;backdrop-filter:blur(4px)}
+  .tag-live{position:absolute;top:12px;right:12px;background:var(--ok);color:#fff;font-size:11px;font-weight:700;
+    padding:6px 10px;border-radius:999px;display:flex;align-items:center;gap:6px}
+  .tag-live .pulse{background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7)}
+  .promo .body{padding:16px 17px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .promo h3{margin:0;font-size:21px;font-weight:800}
+  .meta{display:flex;flex-direction:column;gap:7px;margin:2px 0 4px}
+  .meta div{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--muted)}
+  .meta svg{width:16px;height:16px;flex:none;color:var(--brand)}
+  .origin{background:var(--ice);color:var(--brand);font-weight:700;padding:1px 8px;border-radius:6px;font-size:12px}
+  .price{margin-top:auto;display:flex;align-items:baseline;gap:6px;padding-top:6px;border-top:1px dashed var(--line)}
+  .price .x{font-size:13px;color:var(--muted);font-weight:700}
+  .price .v{font-size:28px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+  .price .v small{font-size:15px}
+  .price .pp{font-size:11px;color:var(--muted);margin-left:auto;text-align:right;line-height:1.2}
+  .cta{margin-top:12px;display:flex;gap:8px}
+  .btn{flex:1;border:0;border-radius:12px;padding:12px;font-weight:700;font-size:14px;text-align:center;
+    text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .btn-wa{background:#25D366;color:#062e16}
+  .btn-wa:hover{filter:brightness(1.05)}
+  .empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)}
+  .empty svg{width:54px;height:54px;opacity:.4;margin-bottom:12px}
+  .site-footer{background:var(--brand-deep);color:#dfeaf5;margin-top:20px}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px;padding:46px 20px 30px}
+  @media(max-width:700px){.foot-grid{grid-template-columns:1fr;gap:26px}}
+  .foot-col h4{font-size:13px;text-transform:uppercase;letter-spacing:1.4px;margin:0 0 14px;color:#fff;opacity:.85}
+  .foot-col p{margin:0;font-size:14px;line-height:1.6;opacity:.85;max-width:38ch}
+  .foot-col a,.foot-col span{display:block;font-size:14px;color:#dfeaf5;text-decoration:none;margin-bottom:10px;opacity:.9}
+  .foot-col a:hover{color:#fff;text-decoration:underline}
+  .foot-brand{font-size:22px;font-weight:800;letter-spacing:.5px;color:#fff;margin-bottom:12px}
+  .foot-bottom{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    padding:18px 20px;border-top:1px solid rgba(255,255,255,.12);font-size:12.5px;opacity:.7}
+
+  /* ===================== ADMIN PAGE ===================== */
+  #admin{min-height:100vh;background:var(--paper)}
+  .ahead{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;box-shadow:0 4px 20px rgba(12,58,99,.25)}
+  .ahead .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+  .ahead .brand{font-size:16px}
+  .ahead-actions{display:flex;gap:8px}
+  .pill{border:0;padding:10px 16px;border-radius:11px;font-weight:800;font-size:13.5px;display:inline-flex;align-items:center;gap:7px}
+  .pill-gold{background:var(--gold);color:#20180a}
+  .pill-ghost{background:rgba(255,255,255,.16);color:#fff}
+  .a-wrap{max-width:960px;margin:0 auto;padding:26px 20px 80px}
+  .a-intro{margin:0 0 22px}
+  .a-intro h1{font-size:26px;margin:0 0 4px;font-weight:800}
+  .a-intro p{margin:0;color:var(--muted)}
+  .section{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+    padding:22px;margin-bottom:20px}
+  .section > h2{margin:0 0 4px;font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px}
+  .section > .desc{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .field label{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .field input,.field textarea,.field select{border:1px solid var(--line);background:var(--paper);border-radius:11px;
+    padding:12px 13px;font-size:15px;color:var(--ink);font-family:inherit;outline:none;width:100%}
+  .field textarea{resize:vertical;min-height:70px}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--brand)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:600px){.row2,.row3{grid-template-columns:1fr}}
+  .drop{border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted);
+    font-size:13.5px;background:var(--paper);transition:.15s;cursor:pointer}
+  .drop:hover{border-color:var(--brand);color:var(--brand)}
+  .drop.has{padding:0;border-style:solid;overflow:hidden}
+  .drop.has img{max-height:200px;width:100%;object-fit:contain;background:var(--brand)}
+  .logo-drop.has img{background:var(--brand);padding:14px}
+  .seg{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:14px}
+  .seg button{flex:1;border:0;background:none;padding:11px;border-radius:9px;font-weight:700;font-size:13.5px;color:var(--muted)}
+  .seg button.on{background:var(--card);color:var(--brand);box-shadow:var(--shadow)}
+  .save{background:var(--brand);color:#fff;border:0;border-radius:13px;padding:14px 22px;font-weight:800;font-size:15px}
+  .save:hover{background:var(--brand-deep)}
+  .ghost-btn{background:var(--ice);color:var(--brand);border:0;border-radius:11px;padding:11px 16px;font-weight:700;font-size:13.5px}
+  .promo-row{display:flex;align-items:center;gap:13px;padding:12px;border:1px solid var(--line);border-radius:13px;margin-bottom:10px;background:var(--paper)}
+  .promo-row .thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;flex:none;background:var(--ice)}
+  .promo-row .thumb-empty{width:52px;height:52px;border-radius:10px;flex:none;background:var(--ice);display:grid;place-items:center;color:var(--muted)}
+  .promo-row .info{flex:1;min-width:0}
+  .promo-row .info b{display:block;font-size:15px}
+  .promo-row .info span{font-size:12.5px;color:var(--muted)}
+  .promo-row .acts{display:flex;gap:6px}
+  .mini-btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 11px;font-size:13px;font-weight:700;color:var(--muted)}
+  .mini-btn.del:hover{border-color:#e5484d;color:#e5484d}
+  .mini-btn:hover{border-color:var(--brand);color:var(--brand)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--brand-deep);
+    color:#fff;padding:13px 22px;border-radius:12px;font-weight:700;font-size:14px;box-shadow:var(--shadow-lg);
+    opacity:0;pointer-events:none;transition:.3s;z-index:200}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* login gate */
+  .gate{position:fixed;inset:0;z-index:300;background:linear-gradient(160deg,var(--brand),var(--brand-deep));
+    display:none;align-items:center;justify-content:center;padding:20px}
+  .gate.open{display:flex}
+  .gate .box{background:var(--card);border-radius:20px;box-shadow:var(--shadow-lg);padding:30px;width:100%;max-width:360px;text-align:center}
+  .gate h3{margin:0 0 4px;font-size:20px}
+  .gate p{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+  .gate input{width:100%;text-align:center;letter-spacing:2px;border:1px solid var(--line);border-radius:12px;
+    padding:13px;font-size:16px;margin-bottom:12px;outline:none}
+  .gate input:focus{border-color:var(--brand)}
+  .stage{position:relative;width:100%;aspect-ratio:1;border-radius:14px;overflow:hidden;
+    box-shadow:var(--shadow-lg);touch-action:none;user-select:none}
+  .stage canvas{width:100%;height:100%;display:block}
+  .handle{position:absolute;border:2px dashed rgba(255,255,255,.55);border-radius:8px;cursor:grab;touch-action:none}
+  .handle:hover,.handle.on{border-color:#fff;background:rgba(255,255,255,.10)}
+  .handle::after{content:attr(data-tip);position:absolute;top:-22px;left:0;font-size:10px;font-weight:700;
+    color:#fff;background:rgba(0,0,0,.5);padding:1px 6px;border-radius:5px;opacity:0;transition:.15s;white-space:nowrap}
+  .handle:hover::after{opacity:1}
+  .ed-controls{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .ed-controls label{font-size:12.5px;font-weight:700;color:var(--muted);display:flex;flex-direction:column;gap:5px}
+  .ed-controls input[type=range]{width:100%}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ SITE PÚBLICO -->
+<div id="site">
+  <div class="topbar" id="topo"><div class="wrap">
+    <div class="brand">
+      <span id="logoBox"></span>
+      <span id="brandText"><span id="brandName">JORNADA360</span><small id="brandTag">AGÊNCIA DE VIAGEM</small></span>
+    </div>
+    <div class="top-actions"><button class="icon-btn" onclick="askAdmin()" title="Administração">🔒</button></div>
+  </div></div>
+
+  <section class="hero">
+    <canvas class="hero-deco" id="deco"></canvas>
+    <div class="wrap">
+      <span class="eyebrow" id="eyebrowBox"><span class="pulse"></span> <span id="heroEyebrow"></span></span>
+      <h1 id="heroTitle"></h1>
+      <p id="heroSub"></p>
+      <div class="stat-row">
+        <div class="stat"><b id="statCount">0</b><span>Ofertas no ar</span></div>
+        <div class="stat" id="stat2box"><b id="stat2"></b><span id="stat2l"></span></div>
+        <div class="stat" id="stat3box"><b id="stat3"></b><span id="stat3l"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="board"><div class="wrap">
+    <div class="toolbar">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input id="q" placeholder="Buscar destino..." oninput="renderSite()">
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div></div>
+
+  <footer class="site-footer">
+    <div class="wrap foot-grid">
+      <div class="foot-col">
+        <div class="foot-brand" id="footBrand">JORNADA360</div>
+        <p>Sua agência de viagem em São José do Rio Preto. Pacotes com aéreo + hospedagem, roteiros e experiências — do sonho ao embarque, a gente cuida de tudo.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Atendimento</h4>
+        <a id="footWa" href="#" target="_blank">💬 Falar no WhatsApp</a>
+        <a href="#topo">🔝 Ver promoções ativas</a>
+        <span>Seg a Sex, 9h às 18h · Sáb 9h às 13h</span>
+      </div>
+      <div class="foot-col">
+        <h4>Como funciona</h4>
+        <span>1. Escolha a promoção</span>
+        <span>2. Fale com a gente no WhatsApp</span>
+        <span>3. Reserve e parcele em até 10x</span>
+      </div>
+    </div>
+    <div class="foot-bottom wrap">
+      <span id="footerTxt"></span>
+      <span id="footYear"></span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================================================ PÁGINA ADMIN -->
+<div id="admin" class="hide">
+  <div class="ahead"><div class="wrap">
+    <div class="brand"><span id="logoBoxAdmin"></span> Painel Jornada360</div>
+    <div class="ahead-actions">
+      <button class="pill pill-ghost" onclick="showSite()">👁 Ver site</button>
+      <button class="pill pill-ghost" onclick="logout()">Sair</button>
+    </div>
+  </div></div>
+
+  <div class="a-wrap">
+    <div class="a-intro"><h1>Configurar o site</h1><p>Tudo o que você mudar aqui aparece no site na hora.</p></div>
+
+    <!-- IDENTIDADE -->
+    <div class="section">
+      <h2>🎨 Identidade</h2>
+      <p class="desc">Sua logo e o nome que aparecem no topo.</p>
+      <div class="field"><label>Logo</label>
+        <div class="drop logo-drop" id="dropLogo" onclick="pick('fileLogo')"><span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span></div>
+        <input type="file" id="fileLogo" accept="image/*" hidden onchange="onLogo(event)">
+        <button class="ghost-btn" style="align-self:flex-start;margin-top:8px" onclick="resetLogo()">↺ Usar logo padrão</button>
+      </div>
+      <div class="field"><label>Tamanho da logo — <span id="logoSizeVal">50</span>px</label>
+        <input type="range" id="sLogoSize" min="28" max="130" value="50" oninput="onLogoSize(this.value)">
+      </div>
+      <div class="row2">
+        <div class="field"><label>Nome da marca</label><input id="sName"></div>
+        <div class="field"><label>Assinatura</label><input id="sTag"></div>
+      </div>
+    </div>
+
+    <!-- BANNER -->
+    <div class="section">
+      <h2>📝 Banner principal</h2>
+      <p class="desc">O texto grande que o cliente vê ao abrir o site.</p>
+      <div class="field"><label>Etiqueta pequena</label><input id="sEyebrow"></div>
+      <div class="field"><label>Título</label><textarea id="sTitle"></textarea></div>
+      <div class="field"><label>Subtítulo</label><textarea id="sSub"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Número (destaque 2)</label><input id="sStat2"></div>
+        <div class="field"><label>Legenda 2</label><input id="sStat2l"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Número (destaque 3)</label><input id="sStat3"></div>
+        <div class="field"><label>Legenda 3</label><input id="sStat3l"></div>
+      </div>
+    </div>
+
+    <!-- CONTATO / RODAPÉ -->
+    <div class="section">
+      <h2>📱 Contato &amp; rodapé</h2>
+      <p class="desc">Número que recebe os pedidos e o texto do rodapé.</p>
+      <div class="field"><label>WhatsApp (só números, com DDD)</label><input id="sWa" placeholder="5517999999999"></div>
+      <div class="field"><label>Rodapé</label><input id="sFooter"></div>
+      <button class="save" onclick="saveSettings()">Salvar identidade &amp; textos</button>
+    </div>
+
+    <!-- PROMOÇÕES -->
+    <div class="section">
+      <h2>✈️ Promoções</h2>
+      <p class="desc">Adicione, edite ou remova as ofertas que aparecem na vitrine.</p>
+
+      <div class="seg">
+        <button class="on" id="segUp" onclick="setMode('upload')">🖼️ Subir arte pronta</button>
+        <button id="segForm" onclick="setMode('form')">✨ Gerar com foto</button>
+      </div>
+
+      <div class="row2">
+        <div class="field"><label>Destino</label><input id="fDest" placeholder="Ex: Gramado" onblur="onDestBlur()"></div>
+        <div class="field"><label>Categoria</label><input id="fCat" placeholder="Serra, Praia, Internacional..."></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Datas</label><input id="fDate" placeholder="16 à 21 de setembro"></div>
+        <div class="field"><label>Saída</label><input id="fOrigin" value="S. J. do Rio Preto"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Hotel / Pousada</label><input id="fHotel" placeholder="Pousada Boschetti"></div>
+        <div class="field"><label>Inclui</label><input id="fMeal" value="Café da Manhã"></div>
+        <div class="field"><label>Parcelas</label><input id="fx" value="10" inputmode="numeric"></div>
+      </div>
+      <div class="field"><label>Valor por pessoa (R$)</label><input id="fPrice" placeholder="165,35" inputmode="decimal"></div>
+
+      <div class="field" id="fieldUpload"><label>Arte pronta (quadrada)</label>
+        <div class="drop" id="dropArt" onclick="pick('fileArt')"><span>📤 Toque para enviar a arte<br><small>a imagem quadrada que você já faz no Canva</small></span></div>
+        <input type="file" id="fileArt" accept="image/*" hidden onchange="onArt(event)">
+      </div>
+      <div class="field hide" id="fieldPhoto"><label>Foto do destino</label>
+        <div class="drop" id="dropPhoto" onclick="pick('filePhoto')"><span>🏞️ Toque para enviar a foto do destino<br><small>fica atrás no card, com os dados por cima</small></span></div>
+        <input type="file" id="filePhoto" accept="image/*" hidden onchange="onPhoto(event)">
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+        <button class="save" onclick="savePromo()" id="btnSavePromo">Publicar promoção</button>
+        <button class="ghost-btn hide" id="btnCancelEdit" onclick="resetPromoForm()">Cancelar edição</button>
+      </div>
+
+      <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+      <h2 style="font-size:15px">No ar agora</h2>
+      <div id="promoList" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN GATE -->
+<div class="gate" id="gate">
+  <div class="box">
+    <h3>🔒 Administração</h3>
+    <p>Entre com seu e-mail e senha para configurar o site.</p>
+    <input type="email" id="email" placeholder="e-mail" autocomplete="username">
+    <input type="password" id="pwd" placeholder="senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="save" style="width:100%" onclick="tryLogin()">Entrar</button>
+    <button class="ghost-btn" style="width:100%;margin-top:8px" onclick="closeGate()">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- EDITOR DE ARTE -->
+<div class="gate" id="editor" style="align-items:flex-start;overflow:auto;background:rgba(6,20,34,.9)">
+  <div class="box" style="max-width:520px;padding:18px;text-align:left">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0">Editar arte 🎨</h3>
+      <button class="mini-btn" onclick="closeEditor()">Fechar</button>
+    </div>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Arraste os elementos para mover. Toque na <b>logo</b> para trocar a imagem.</p>
+    <div id="stage" class="stage"><canvas id="edCanvas"></canvas></div>
+    <div class="ed-controls">
+      <label>Tamanho da logo<input type="range" id="edLogoSize" min="40" max="220" oninput="edSet('logo',this.value)"></label>
+      <label>Tamanho da caixa de preço<input type="range" id="edPriceSize" min="55" max="170" oninput="edSet('price',this.value)"></label>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="save" style="flex:1" onclick="exportEditor()">⬇ Gerar imagem</button>
+      <button class="ghost-btn" onclick="applyLayoutToAll()">📐 Aplicar a todas</button>
+      <button class="ghost-btn" onclick="pick('edLogoFile')">Trocar logo</button>
+      <button class="ghost-btn" onclick="pick('edPhotoFile')">Trocar foto</button>
+      <button class="ghost-btn" onclick="edReset()">Resetar</button>
+    </div>
+    <input type="file" id="edLogoFile" accept="image/*" hidden onchange="edLogoChange(event)">
+    <input type="file" id="edPhotoFile" accept="image/*" hidden onchange="edPhotoChange(event)">
+  </div>
+</div>
+
+<!-- OVERLAY DA ARTE GERADA -->
+<div class="gate" id="artModal" style="align-items:flex-start;overflow:auto">
+  <div class="box" style="max-width:440px;padding:20px">
+    <h3 style="margin-bottom:2px">Sua arte está pronta 🎨</h3>
+    <p style="margin-bottom:14px">Segure o dedo na imagem (celular) ou botão direito (PC) e escolha <b>Salvar imagem</b>.</p>
+    <img id="artImg" alt="arte da promoção" style="width:100%;border-radius:14px;box-shadow:var(--shadow-lg)">
+    <a id="artLink" class="save" style="display:block;text-align:center;text-decoration:none;margin-top:14px" download="arte.png">⬇ Tentar baixar direto</a>
+    <button class="ghost-btn" style="width:100%;margin-top:8px" onclick="document.getElementById('artModal').classList.remove('open')">Fechar</button>
+  </div>
+</div>
+
+<script>
+/* ================= ESTADO ================= */
+const K_SET='jornada360_settings_v2', K_PROMO='jornada360_promos_v2';
+const ADMIN_PWD='jornada360';               // senha do painel (troque depois)
+const DEFAULT_LOGO=`<svg class="logo" viewBox="0 0 100 100"><g fill="#fff">
+  <path d="M50 8c-19 0-34 15-34 34 0 24 34 50 34 50s10-8 18-18L54 50a4 4 0 10-9-6L34 42c0-9 7-16 16-16 4 0 8 1 11 4l7-9C63 12 57 8 50 8z"/>
+  <path d="M62 20l6-8 4 12 12 3-11 6z"/></g></svg>`;
+
+const defaults={
+  logo:null, name:'JORNADA360', tag:'AGÊNCIA DE VIAGEM',
+  eyebrow:'Promoções ativas agora',
+  title:'Suas próximas viagens, com preço de quem sai de Rio Preto.',
+  sub:'Pacotes com aéreo + hospedagem selecionados pela nossa equipe. Preços por pessoa, parcelados, prontos pra reservar pelo WhatsApp.',
+  stat2:'10x', stat2l:'Sem juros', stat3:'Rio Preto', stat3l:'Nossa base',
+  wa:'', footer:'Feito com ♥ pela Jornada360 — compartilhe este link com seus clientes.',
+  logoSize:50, logoBg:null
+};
+let settings=Object.assign({},defaults);
+const seed=[
+  {id:1,dest:'Gramado',cat:'Serra',date:'16 à 21 de setembro',origin:'S. J. do Rio Preto',hotel:'Pousada Boschetti',meal:'Café da Manhã',x:'10',price:'165,35',img:null},
+  {id:2,dest:'Rio de Janeiro',cat:'Praia',date:'05 à 10 de novembro',origin:'S. J. do Rio Preto',hotel:'Esuites Hotel Recreio Shopping',meal:'Café da Manhã',x:'10',price:'177,30',img:null}
+];
+let promos=[], destImages={};
+let activeCat='Todos', mode='upload', artData=null, photoData=null, editingId=null;
+
+/* ===== DADOS NA NUVEM (Supabase) ===== */
+async function loadData(){
+  try{
+    const [s,pr,ds]=await Promise.all([
+      sb.from('settings').select('data').eq('id',1).maybeSingle(),
+      sb.from('promos').select('id,data,pos').order('pos',{ascending:true}),
+      sb.from('destinations').select('name,image_url')
+    ]);
+    if(s.data&&s.data.data&&Object.keys(s.data.data).length)settings=Object.assign({},defaults,s.data.data);
+    promos=(pr.data||[]).map(r=>Object.assign({},r.data,{id:Number(r.id)}));
+    (ds.data||[]).forEach(d=>{destImages[d.name]=d.image_url;});
+    if(!promos.length){promos=seed.map(p=>Object.assign({},p));await persist();}
+  }catch(e){toast('Sem conexão com o servidor');console.error(e);}
+}
+async function persist(){
+  try{
+    await sb.from('settings').upsert({id:1,data:settings});
+    await sb.from('promos').upsert(promos.map((p,i)=>({id:p.id,data:p,pos:i})));
+    return true;
+  }catch(e){toast('Erro ao salvar. Faça login como admin.');console.error(e);return false;}
+}
+async function uploadImage(dataUrl,prefix,ext){
+  try{
+    const blob=await(await fetch(dataUrl)).blob();
+    const path=`${prefix}-${Date.now()}.${ext||'jpg'}`;
+    const{error}=await sb.storage.from('images').upload(path,blob,{contentType:blob.type,upsert:true});
+    if(error)throw error;
+    return sb.storage.from('images').getPublicUrl(path).data.publicUrl;
+  }catch(e){toast('Erro ao enviar imagem');console.error(e);return null;}
+}
+async function saveDestImage(dest,url){
+  if(!dest||!url)return;const key=dest.trim().toLowerCase();destImages[key]=url;
+  try{await sb.from('destinations').upsert({name:key,image_url:url});}catch(e){console.error(e);}
+}
+const val=id=>document.getElementById(id).value.trim();
+const set=(id,v)=>document.getElementById(id).textContent=v;
+
+/* ================= SITE PÚBLICO ================= */
+function applySettings(){
+  const hasLogo=!!settings.logo;
+  const lh=settings.logoSize||50;
+  const lb=document.getElementById('logoBox');
+  lb.innerHTML=hasLogo?`<img src="${settings.logo}" alt="${esc(settings.name)}" style="height:${lh}px">`:DEFAULT_LOGO.replace('class="logo"',`class="logo" style="width:${lh}px;height:${lh}px"`);
+  lb.classList.toggle('pill',hasLogo && !!settings.logoBg);
+  lb.style.background=(hasLogo && settings.logoBg)?settings.logoBg:'';
+  document.getElementById('logoBoxAdmin').innerHTML=hasLogo?`<img src="${settings.logo}" alt="logo">`:DEFAULT_LOGO;
+  // com logo própria (que já tem o nome), esconde o texto ao lado
+  document.getElementById('brandText').style.display=hasLogo?'none':'';
+  document.querySelector('#site .brand').classList.toggle('logo-only',hasLogo);
+  set('brandName',settings.name); set('brandTag',settings.tag);
+  set('heroEyebrow',settings.eyebrow); set('heroTitle',settings.title); set('heroSub',settings.sub);
+  set('stat2',settings.stat2); set('stat2l',settings.stat2l); set('stat3',settings.stat3); set('stat3l',settings.stat3l);
+  document.getElementById('footerTxt').innerHTML=esc(settings.footer);
+  document.getElementById('footBrand').textContent=settings.name||'JORNADA360';
+  document.getElementById('footYear').textContent='© '+new Date().getFullYear()+' '+(settings.name||'Jornada360');
+  const num=(settings.wa||'').replace(/\D/g,'');
+  const fw=document.getElementById('footWa');
+  fw.href=num?`https://wa.me/${num}`:'#';fw.style.display=num?'':'none';
+  // esconde blocos vazios
+  const hideIf=(id,cond)=>document.getElementById(id).style.display=cond?'none':'';
+  hideIf('eyebrowBox',!settings.eyebrow);
+  hideIf('heroSub',!settings.sub);
+  hideIf('stat2box',!settings.stat2 && !settings.stat2l);
+  hideIf('stat3box',!settings.stat3 && !settings.stat3l);
+  hideIf('footerTxt',!settings.footer);
+  document.getElementById('heroTitle').style.display=settings.title?'':'none';
+}
+const cats=()=>['Todos',...new Set(promos.map(p=>p.cat).filter(Boolean))];
+function renderSite(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  set('statCount',promos.length);
+  document.getElementById('chips').innerHTML=cats().map(c=>`<button class="chip ${c===activeCat?'active':''}" onclick="setCat('${c}')">${c}</button>`).join('');
+  const list=promos.filter(p=>(activeCat==='Todos'||p.cat===activeCat)&&(p.dest.toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q)));
+  const g=document.getElementById('grid');
+  g.innerHTML=list.length?list.map(card).join(''):`<div class="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+    <p>Nenhuma promoção encontrada.</p></div>`;
+}
+function card(p){
+  const wa=encodeURIComponent(`Olá! Tenho interesse na promoção de ${p.dest} (${p.date}). Ainda está disponível?`);
+  const num=(settings.wa||'').replace(/\D/g,'');
+  const media=p.img?`<img src="${p.img}" alt="${esc(p.dest)}">`:`<div class="noimg">${ic('img')}<span>Foto do destino</span></div>`;
+  return `<article class="promo">
+    <div class="ph">${media}<span class="badge">Aéreo + Hospedagem</span><span class="tag-live"><span class="pulse"></span>Ativa</span></div>
+    <div class="body">
+      <h3>${esc(p.dest)}</h3>
+      <div class="meta">
+        <div>${ic('cal')} ${esc(p.date)}</div>
+        <div>${ic('plane')} Ida e volta <span class="origin">${esc(p.origin)}</span></div>
+        <div>${ic('bed')} ${esc(p.hotel||'Hospedagem selecionada')}</div>
+        ${p.meal?`<div>${ic('meal')} ${esc(p.meal)}</div>`:''}
+      </div>
+      <div class="price"><span class="x">${esc(p.x)}x</span>
+        <span class="v">R$ <span>${esc(p.price.split(',')[0])}</span><small>,${esc(p.price.split(',')[1]||'00')}</small></span>
+        <span class="pp">valor<br>por pessoa</span></div>
+      <div class="cta"><a class="btn btn-wa" target="_blank" href="${num?`https://wa.me/${num}?text=${wa}`:'#'}">${ic('wa')} Reservar no WhatsApp</a></div>
+    </div></article>`;
+}
+function setCat(c){activeCat=c;renderSite();}
+
+function ic(n){const s='width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+  const P={cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/>',
+    plane:'<path d="M2 12l20-8-8 20-2-8-8-2z"/>', bed:'<path d="M3 18v-6h18v6M3 12V6h8v6M21 12V9a3 3 0 00-3-3h-3"/>',
+    meal:'<path d="M4 20h16M6 16a6 6 0 0112 0z"/><path d="M12 10V4"/>', wa:'<path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2z"/>',
+    img:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>'};
+  return `<svg ${s}>${P[n]||''}</svg>`;}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ================= LOGIN / NAVEGAÇÃO ================= */
+function askAdmin(){if(window.__logged){showAdmin();return;}
+  document.getElementById('gate').classList.add('open');setTimeout(()=>document.getElementById('email').focus(),100);}
+function closeGate(){document.getElementById('gate').classList.remove('open');document.getElementById('pwd').value='';}
+async function tryLogin(){
+  const email=document.getElementById('email').value.trim(),password=document.getElementById('pwd').value;
+  if(!email||!password){toast('Preencha e-mail e senha');return;}
+  const{error}=await sb.auth.signInWithPassword({email,password});
+  if(error){toast('E-mail ou senha inválidos');document.getElementById('pwd').value='';return;}
+  closeGate();showAdmin();
+}
+function showAdmin(){document.getElementById('site').classList.add('hide');document.getElementById('admin').classList.remove('hide');
+  loadAdminFields();renderPromoList();window.scrollTo(0,0);}
+function showSite(){document.getElementById('admin').classList.add('hide');document.getElementById('site').classList.remove('hide');
+  applySettings();renderSite();drawDeco();window.scrollTo(0,0);}
+async function logout(){try{await sb.auth.signOut();}catch(e){}showSite();}
+
+/* ================= ADMIN: SETTINGS ================= */
+function loadAdminFields(){
+  const m={sName:'name',sTag:'tag',sEyebrow:'eyebrow',sTitle:'title',sSub:'sub',
+    sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer'};
+  for(const id in m)document.getElementById(id).value=settings[m[id]]||'';
+  document.getElementById('sLogoSize').value=settings.logoSize||50;
+  document.getElementById('logoSizeVal').textContent=settings.logoSize||50;
+  const d=document.getElementById('dropLogo');
+  if(settings.logo){d.classList.add('has');d.innerHTML=`<img src="${settings.logo}" alt="logo">`;}
+  else{d.classList.remove('has');d.innerHTML='<span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span>';}
+}
+function saveSettings(){
+  const m={sName:'name',sTag:'tag',sEyebrow:'eyebrow',sTitle:'title',sSub:'sub',
+    sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer'};
+  for(const id in m)settings[m[id]]=val(id);
+  persist();applySettings();toast('Salvo! ✓');
+}
+function applyLogoResult(r){settings.logo=r.url;settings.logoBg=r.bg;persist();}
+function onLogo(e){readImg(e,async raw=>{
+  const r=await cropLogo(raw);applyLogoResult(r);
+  const box=document.getElementById('dropLogo');
+  box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo">`;
+  applySettings();toast('Logo pronta ✓');
+});}
+// recorta as margens e detecta a cor de fundo da logo (pra usar no selo)
+function cropLogo(src){return new Promise(res=>{const i=new Image();i.onload=()=>{
+  const w=i.width,h=i.height,cn=document.createElement('canvas');cn.width=w;cn.height=h;
+  const x=cn.getContext('2d');x.drawImage(i,0,0);
+  let d;try{d=x.getImageData(0,0,w,h);}catch(e){res({url:src,bg:null});return;}
+  const p=d.data,cr=p[0],cg=p[1],cb=p[2],ca=p[3];
+  let minx=w,miny=h,maxx=0,maxy=0,kept=false,lumSum=0,lumN=0;
+  for(let k=0;k<p.length;k+=4){
+    const transp=ca<20&&p[k+3]<20;
+    const near=ca>=20&&Math.abs(p[k]-cr)+Math.abs(p[k+1]-cg)+Math.abs(p[k+2]-cb)<40&&p[k+3]>20;
+    if(transp||near)continue;               // margem/fundo → ignora
+    kept=true;lumSum+=0.299*p[k]+0.587*p[k+1]+0.114*p[k+2];lumN++;
+    const px=(k>>2)%w,py=(k>>2)/w|0;
+    if(px<minx)minx=px;if(px>maxx)maxx=px;if(py<miny)miny=py;if(py>maxy)maxy=py;
+  }
+  if(!kept){res({url:src,bg:null});return;}
+  // cor do selo: fundo opaco → usa a própria cor; transparente → escolhe por contraste
+  // fundo opaco → usa a cor como selo; PNG transparente → sem selo (null)
+  const bg=(ca>=20)?`rgb(${cr},${cg},${cb})`:null;
+  const m=Math.round(Math.min(w,h)*0.03),sw=maxx-minx+1+m*2,sh=maxy-miny+1+m*2;
+  const sc=Math.min(1,480/Math.max(sw,sh)),cw=Math.round(sw*sc),ch=Math.round(sh*sc);
+  const cc=document.createElement('canvas');cc.width=cw;cc.height=ch;
+  cc.getContext('2d').drawImage(cn,minx-m,miny-m,sw,sh,0,0,cw,ch);
+  res({url:cc.toDataURL('image/png'),bg});
+};i.onerror=()=>res({url:src,bg:null});i.src=src;});}
+function onLogoSize(v){settings.logoSize=+v;document.getElementById('logoSizeVal').textContent=v;persist();}
+function resetLogo(){settings.logo=null;const d=document.getElementById('dropLogo');
+  d.classList.remove('has');d.innerHTML='<span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span>';
+  toast('Logo padrão restaurada — salve para aplicar');}
+
+/* ================= ADMIN: PROMOÇÕES ================= */
+function setMode(m){mode=m;
+  document.getElementById('segUp').classList.toggle('on',m==='upload');
+  document.getElementById('segForm').classList.toggle('on',m==='form');
+  document.getElementById('fieldUpload').classList.toggle('hide',m!=='upload');
+  document.getElementById('fieldPhoto').classList.toggle('hide',m!=='form');
+}
+function onArt(e){readImg(e,async d=>{const c=await compress(d,1200,.86,'image/jpeg');dropShow('dropArt',c,'contain');toast('Enviando...');artData=await uploadImage(c,'arte');if(artData)toast('Imagem enviada ✓');});}
+function onPhoto(e){readImg(e,async d=>{const c=await compress(d,1200,.82,'image/jpeg');dropShow('dropPhoto',c,'cover');toast('Enviando...');photoData=await uploadImage(c,'destino');if(photoData)toast('Imagem enviada ✓');});}
+function dropShow(id,d,fit){const el=document.getElementById(id);el.classList.add('has');
+  el.innerHTML=`<img src="${d}" alt="prévia" style="object-fit:${fit}">`;}
+function savePromo(){
+  const dest=val('fDest');if(!dest){toast('Informe o destino');return;}
+  const chosen = mode==='upload' ? artData : photoData;
+  const obj={dest,cat:val('fCat')||'Novas',date:val('fDate'),origin:val('fOrigin'),
+    hotel:val('fHotel'),meal:val('fMeal'),x:val('fx')||'10',price:val('fPrice')||'0,00'};
+  obj.mode=mode;
+  const finalImg = chosen || (destImages[dest.toLowerCase()]||null);
+  if(editingId){
+    const p=promos.find(x=>x.id===editingId);
+    Object.assign(p,obj); if(chosen)p.img=chosen;
+    toast('Promoção atualizada ✓');
+  }else{
+    promos.unshift(Object.assign({id:Date.now(),img:finalImg},obj));
+    toast('Promoção publicada ✓');
+  }
+  if(mode==='form'&&photoData)saveDestImage(dest,photoData);   // guarda a foto pra reuso
+  persist();resetPromoForm();renderPromoList();
+}
+// ao sair do campo destino, puxa foto já cadastrada daquele destino
+function onDestBlur(){
+  if(editingId||photoData||artData)return;
+  const key=val('fDest').toLowerCase();
+  if(destImages[key]){photoData=destImages[key];setMode('form');dropShow('dropPhoto',photoData,'cover');
+    toast('Foto do destino carregada automaticamente ✓');}
+}
+function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=id;
+  document.getElementById('fDest').value=p.dest||'';document.getElementById('fCat').value=p.cat||'';
+  document.getElementById('fDate').value=p.date||'';document.getElementById('fOrigin').value=p.origin||'';
+  document.getElementById('fHotel').value=p.hotel||'';document.getElementById('fMeal').value=p.meal||'';
+  document.getElementById('fx').value=p.x||'10';document.getElementById('fPrice').value=p.price||'';
+  document.getElementById('btnSavePromo').textContent='Salvar alterações';
+  document.getElementById('btnCancelEdit').classList.remove('hide');
+  document.getElementById('fDest').scrollIntoView({behavior:'smooth',block:'center'});
+}
+async function delPromo(id){promos=promos.filter(p=>p.id!==id);
+  try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
+  persist();renderPromoList();toast('Promoção removida');}
+function resetPromoForm(){editingId=null;artData=null;photoData=null;
+  ['fDest','fCat','fDate','fHotel','fPrice'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fMeal').value='Café da Manhã';document.getElementById('fx').value='10';
+  document.getElementById('fOrigin').value='S. J. do Rio Preto';
+  ['dropArt','dropPhoto'].forEach(id=>{const d=document.getElementById(id);d.classList.remove('has');});
+  document.getElementById('dropArt').innerHTML='<span>📤 Toque para enviar a arte<br><small>a imagem quadrada que você já faz no Canva</small></span>';
+  document.getElementById('dropPhoto').innerHTML='<span>🏞️ Toque para enviar a foto do destino<br><small>fica atrás no card, com os dados por cima</small></span>';
+  document.getElementById('btnSavePromo').textContent='Publicar promoção';
+  document.getElementById('btnCancelEdit').classList.add('hide');setMode('upload');
+}
+function renderPromoList(){
+  const el=document.getElementById('promoList');
+  if(!promos.length){el.innerHTML='<p style="color:var(--muted);font-size:14px">Nenhuma promoção ainda.</p>';return;}
+  el.innerHTML=promos.map(p=>`<div class="promo-row">
+    ${p.img?`<img class="thumb" src="${p.img}">`:`<div class="thumb-empty">${ic('img')}</div>`}
+    <div class="info"><b>${esc(p.dest)}</b><span>${esc(p.date||'')} · R$ ${esc(p.price)} · ${esc(p.cat||'')}</span></div>
+    <div class="acts">
+      <button class="mini-btn" onclick="openEditor(${p.id})" style="border-color:var(--brand);color:var(--brand)">🎨 Arte</button>
+      <button class="mini-btn" onclick="editPromo(${p.id})">Editar dados</button>
+      <button class="mini-btn del" onclick="delPromo(${p.id})">Remover</button>
+    </div></div>`).join('');
+}
+
+/* ================= UTIL ================= */
+function pick(id){document.getElementById(id).click();}
+function readImg(e,cb){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>cb(r.result);r.readAsDataURL(f);}
+// reduz e compacta a imagem para caber no armazenamento
+function compress(src,maxDim,quality,type){return new Promise(res=>{const i=new Image();i.onload=()=>{
+  let w=i.width,h=i.height;const s=Math.min(1,maxDim/Math.max(w,h));w=Math.round(w*s);h=Math.round(h*s);
+  const cn=document.createElement('canvas');cn.width=w;cn.height=h;cn.getContext('2d').drawImage(i,0,0,w,h);
+  try{res(cn.toDataURL(type||'image/jpeg',quality||.82));}catch(e){res(src);}
+};i.onerror=()=>res(src);i.src=src;});}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+
+function drawDeco(){const c=document.getElementById('deco');if(!c)return;
+  const s=c.parentElement.getBoundingClientRect();c.width=s.width;c.height=s.height;
+  const x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.strokeStyle='rgba(255,255,255,.4)';
+  for(let i=0;i<4;i++){const y=40+i*70;x.setLineDash([2,10]);x.lineWidth=1.5;
+    x.beginPath();x.moveTo(c.width*.55,y);x.bezierCurveTo(c.width*.7,y-40,c.width*.85,y+30,c.width+20,y-10);x.stroke();}}
+addEventListener('resize',drawDeco);
+
+/* ================= GERADOR DE ARTE (imagem para baixar) ================= */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function rr(x,X,Y,W,H,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);
+  x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath();}
+function drawCover(x,img,W,H){const s=Math.max(W/img.width,H/img.height);const w=img.width*s,h=img.height*s;
+  x.drawImage(img,(W-w)/2,(H-h)/2,w,h);}
+function triggerDownload(url,name){const a=document.createElement('a');a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();}
+
+function showArt(url,safe){
+  document.getElementById('artImg').src=url;
+  const l=document.getElementById('artLink');l.href=url;l.download='arte-'+safe+'.png';
+  document.getElementById('artModal').classList.add('open');
+}
+async function downloadArt(id){
+  const p=promos.find(x=>x.id===id);if(!p)return;
+  const safe=(p.dest||'promo').replace(/[^\w]+/g,'-').toLowerCase();
+  if(p.mode==='upload'&&p.img){showArt(p.img,safe);return;}
+  toast('Gerando arte...');
+  try{const c=await buildArt(p);showArt(c.toDataURL('image/png'),safe);}
+  catch(e){toast('Não consegui gerar a arte');}
+}
+
+// layout padrão (posições normalizadas 0..1 no quadro 1080)
+const DEFAULT_LAYOUT={tag:{x:.067,y:.067},logo:{x:.63,y:.067,scale:1},info:{x:.067,y:.567},price:{x:.067,y:.742,scale:1}};
+function getBrand(){return getComputedStyle(document.documentElement).getPropertyValue('--brand').trim()||'#08518b';}
+// ícones de linha (branco), desenhados no canvas — sem emoji colorido
+const ICON_PATHS={
+  cal:'M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z M3 10h18 M8 2v4 M16 2v4',
+  plane:'M2 12l20-8-8 20-2-8-8-2z',
+  bed:'M4 21V5h10v16 M14 21V10h6v11 M7 8h1.5 M7 12h1.5 M7 16h1.5 M11 8h1.5 M11 12h1.5 M11 16h1.5',
+  meal:'M4 20h16 M6 16a6 6 0 0112 0z M12 10V4'};
+function drawIcon(x,name,px,py,size,color){if(!ICON_PATHS[name])return;
+  x.save();x.translate(px,py);x.scale(size/24,size/24);
+  x.strokeStyle=color;x.lineWidth=2;x.lineJoin='round';x.lineCap='round';
+  x.stroke(new Path2D(ICON_PATHS[name]));x.restore();}
+function normLayout(L){L=L||{};return{
+  tag:Object.assign({},DEFAULT_LAYOUT.tag,L.tag),
+  logo:Object.assign({},DEFAULT_LAYOUT.logo,L.logo),
+  info:Object.assign({},DEFAULT_LAYOUT.info,L.info),
+  price:Object.assign({},DEFAULT_LAYOUT.price,L.price)};}
+
+function drawPrice(x,p,BRAND){
+  const parts=(p.price||'0,00').split(','),reais=parts[0],cents=','+(parts[1]||'00');
+  const F=f=>x.font=f+' system-ui,sans-serif';
+  F('800 96px');const bigW=x.measureText(reais).width;
+  F('800 40px');const centsW=x.measureText(cents).width;
+  F('800 34px');const rsW=x.measureText('R$').width;
+  F('800 28px');const xW=x.measureText((p.x||'10')+'x').width;
+  const colW=Math.max(rsW,xW),gap=14,contentW=colW+gap+bigW+centsW+6;
+  F('700 30px');const labelW=x.measureText('Valor por pessoa').width;
+  const pad=46,boxH=206,bw=Math.max(contentW,labelW)+pad*2;
+  x.fillStyle='#fff';rr(x,0,0,bw,boxH,30);x.fill();
+  const cx=(bw-contentW)/2,base=128;
+  x.fillStyle=BRAND;x.textBaseline='alphabetic';x.textAlign='left';
+  F('800 34px');x.fillText('R$',cx,base-46);
+  F('800 28px');x.fillText((p.x||'10')+'x',cx,base-8);
+  F('800 96px');x.fillText(reais,cx+colW+gap,base);
+  F('800 40px');x.fillText(cents,cx+colW+gap+bigW+6,base-56);
+  F('700 30px');x.textAlign='center';x.fillText('Valor por pessoa',bw/2,boxH-40);x.textAlign='left';
+  return{w:bw,h:boxH};
+}
+// desenha a arte a partir do layout; devolve os retângulos de cada elemento
+function drawArt(x,S,p,L,bgImg,logoImg){
+  const BRAND=getBrand(),B={};
+  if(bgImg)drawCover(x,bgImg,S,S);else paintBrand(x,S,BRAND);
+  const g=x.createLinearGradient(0,S*.30,0,S);
+  g.addColorStop(0,'rgba(4,24,42,0)');g.addColorStop(.5,'rgba(4,24,42,.45)');g.addColorStop(1,'rgba(4,24,42,.94)');
+  x.fillStyle=g;x.fillRect(0,0,S,S);
+  const tx=L.tag.x*S,ty=L.tag.y*S;
+  x.font='700 30px system-ui,sans-serif';const pt='Aéreo + Hospedagem',pw=x.measureText(pt).width+52;
+  x.fillStyle='rgba(255,255,255,.16)';rr(x,tx,ty,pw,60,30);x.fill();
+  x.strokeStyle='rgba(255,255,255,.4)';x.lineWidth=2;rr(x,tx,ty,pw,60,30);x.stroke();
+  x.fillStyle='#fff';x.textBaseline='middle';x.textAlign='left';x.fillText(pt,tx+26,ty+31);x.textBaseline='alphabetic';
+  B.tag={x:tx,y:ty,w:pw,h:60};
+  const ls=L.logo.scale||1,lx=L.logo.x*S,ly=L.logo.y*S;
+  if(logoImg){const lh=118*ls,lw=logoImg.width*(lh/logoImg.height);
+    if(settings.logoBg){const pad=18*ls,bw=lw+pad*2,bh=lh+pad*2;
+      x.fillStyle=settings.logoBg;rr(x,lx,ly,bw,bh,22*ls);x.fill();x.drawImage(logoImg,lx+pad,ly+pad,lw,lh);
+      B.logo={x:lx,y:ly,w:bw,h:bh};
+    }else{x.drawImage(logoImg,lx,ly,lw,lh);B.logo={x:lx,y:ly,w:lw,h:lh};}
+  }else{x.textAlign='left';x.font=`800 ${34*ls}px system-ui,sans-serif`;x.fillStyle='#fff';
+    x.fillText(settings.name||'JORNADA360',lx,ly+30*ls);B.logo={x:lx,y:ly,w:200*ls,h:50*ls};}
+  const ix=L.info.x*S,iy=L.info.y*S;
+  x.textAlign='left';x.fillStyle='#fff';x.font='800 88px system-ui,sans-serif';x.fillText(p.dest||'',ix,iy);
+  const lines=[['cal',p.date],['plane','Ida e volta · '+(p.origin||'')],['bed',p.hotel],['meal',p.meal]].filter(l=>l[1]);
+  x.font='400 36px system-ui,sans-serif';x.textBaseline='alphabetic';let yy=iy+70;
+  lines.forEach((l,idx)=>{
+    drawIcon(x,l[0],ix,yy-30,34,'#ffffff');
+    x.fillStyle='rgba(255,255,255,.96)';x.textAlign='left';x.fillText(l[1],ix+52,yy);
+    if(idx<lines.length-1){x.strokeStyle='rgba(255,255,255,.22)';x.lineWidth=2;x.setLineDash([3,8]);
+      x.beginPath();x.moveTo(ix,yy+22);x.lineTo(ix+560,yy+22);x.stroke();x.setLineDash([]);}
+    yy+=64;});
+  B.info={x:ix-6,y:iy-70,w:660,h:yy-(iy-70)};
+  const ps=L.price.scale||1;x.save();x.translate(L.price.x*S,L.price.y*S);x.scale(ps,ps);
+  const pb=drawPrice(x,p,BRAND);x.restore();
+  B.price={x:L.price.x*S,y:L.price.y*S,w:pb.w*ps,h:pb.h*ps};
+  return B;
+}
+async function buildArt(p){
+  const S=1080,c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');
+  const bg=p.img?await loadImg(p.img).catch(()=>null):null;
+  const lg=settings.logo?await loadImg(settings.logo).catch(()=>null):null;
+  drawArt(x,S,p,normLayout(p.layout),bg,lg);
+  return c;
+}
+function markText(x,S,P){x.textAlign='right';x.font='800 34px system-ui,sans-serif';x.fillStyle='#fff';
+  x.fillText((settings.name||'JORNADA360'),S-P,P+22);
+  x.font='600 16px system-ui,sans-serif';x.fillStyle='rgba(255,255,255,.8)';
+  x.fillText((settings.tag||'AGÊNCIA DE VIAGEM').toUpperCase(),S-P,P+48);
+  x.textAlign='left';x.textBaseline='alphabetic';}
+function paintBrand(x,S,brand){const g=x.createLinearGradient(0,0,S,S);
+  g.addColorStop(0,brand);g.addColorStop(1,'#063a63');x.fillStyle=g;x.fillRect(0,0,S,S);}
+
+/* ================= EDITOR DE ARTE ================= */
+const ED_ELS={tag:'Selo',logo:'Logo',info:'Textos',price:'Preço'};
+let ed={id:null,L:null,bg:null,lg:null};
+function edP(){return promos.find(x=>x.id===ed.id);}
+async function openEditor(id){
+  const p=promos.find(x=>x.id===id);if(!p)return;
+  ed.id=id;ed.L=normLayout(p.layout);
+  ed.bg=p.img?await loadImg(p.img).catch(()=>null):null;
+  ed.lg=settings.logo?await loadImg(settings.logo).catch(()=>null):null;
+  document.getElementById('edLogoSize').value=Math.round((ed.L.logo.scale||1)*100);
+  document.getElementById('edPriceSize').value=Math.round((ed.L.price.scale||1)*100);
+  document.getElementById('editor').classList.add('open');
+  requestAnimationFrame(renderEditor);
+}
+function closeEditor(){edSave();document.getElementById('editor').classList.remove('open');renderPromoList();}
+function renderEditor(){
+  const S=1080,c=document.getElementById('edCanvas');c.width=S;c.height=S;
+  const B=drawArt(c.getContext('2d'),S,edP(),ed.L,ed.bg,ed.lg);
+  const stage=document.getElementById('stage'),k=stage.clientWidth/S;
+  for(const el in ED_ELS){let h=document.getElementById('h_'+el);
+    if(!h){h=document.createElement('div');h.className='handle';h.id='h_'+el;h.dataset.el=el;
+      h.setAttribute('data-tip',ED_ELS[el]);stage.appendChild(h);attachDrag(h);}
+    const b=B[el];h.style.left=b.x*k+'px';h.style.top=b.y*k+'px';
+    h.style.width=Math.max(34,b.w*k)+'px';h.style.height=Math.max(26,b.h*k)+'px';}
+}
+function attachDrag(h){
+  const el=h.dataset.el;let sx=null,sy,ox,oy,moved;
+  h.addEventListener('pointerdown',e=>{e.preventDefault();h.setPointerCapture(e.pointerId);
+    sx=e.clientX;sy=e.clientY;ox=ed.L[el].x;oy=ed.L[el].y;moved=false;h.classList.add('on');});
+  h.addEventListener('pointermove',e=>{if(sx==null)return;
+    const st=document.getElementById('stage'),w=st.clientWidth,ht=st.clientHeight;
+    if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)>4)moved=true;
+    ed.L[el].x=Math.min(.98,Math.max(-.02,ox+(e.clientX-sx)/w));
+    ed.L[el].y=Math.min(.98,Math.max(0,oy+(e.clientY-sy)/ht));renderEditor();});
+  h.addEventListener('pointerup',e=>{if(sx==null)return;sx=null;h.classList.remove('on');
+    if(!moved&&el==='logo')pick('edLogoFile');});
+}
+function edSet(el,v){ed.L[el].scale=v/100;renderEditor();}
+function edReset(){ed.L=normLayout(null);
+  document.getElementById('edLogoSize').value=100;document.getElementById('edPriceSize').value=100;renderEditor();}
+function edSave(){const p=edP();if(p){p.layout=ed.L;persist();}}
+function applyLayoutToAll(){
+  edSave();const L=JSON.parse(JSON.stringify(ed.L));
+  promos.forEach(p=>p.layout=JSON.parse(JSON.stringify(L)));
+  persist();toast('Layout aplicado a todas as '+promos.length+' promoções ✓');
+}
+function edLogoChange(e){readImg(e,async raw=>{const r=await cropLogo(raw);applyLogoResult(r);
+  ed.lg=await loadImg(r.url).catch(()=>null);applySettings();renderEditor();
+  const box=document.getElementById('dropLogo');if(box){box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo">`;}
+  toast('Logo trocada ✓');});}
+function edPhotoChange(e){readImg(e,async d=>{const c=await compress(d,1200,.82,'image/jpeg');toast('Enviando...');
+  const url=await uploadImage(c,'destino')||c;edP().img=url;ed.bg=await loadImg(url).catch(()=>null);
+  saveDestImage(edP().dest,url);persist();renderEditor();toast('Foto trocada ✓');});}
+async function exportEditor(){edSave();const p=edP();
+  const c=await buildArt(p);showArt(c.toDataURL('image/png'),(p.dest||'promo').replace(/[^\w]+/g,'-').toLowerCase());}
+
+/* init */
+(async()=>{
+  await loadData();
+  applySettings();renderSite();drawDeco();
+  // se já estiver logado, mantém acesso admin fácil
+  try{const{data}=await sb.auth.getSession();window.__logged=!!(data&&data.session);}catch(e){}
+})();
+</script>
+</body>
+</html>
