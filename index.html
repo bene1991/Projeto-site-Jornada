@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Jornada360 · Promoções ativas | Agência de Viagem em Rio Preto</title>
 <meta name="description" content="Promoções de viagens da Jornada360: pacotes com aéreo + hospedagem saindo de São José do Rio Preto, parcelados em até 10x. Veja todas as ofertas ativas e reserve pelo WhatsApp.">
 <meta name="keywords" content="agência de viagem, pacotes de viagem, promoção de viagem, Rio Preto, São José do Rio Preto, aéreo e hospedagem, Jornada360, viagens parceladas">
@@ -213,6 +213,51 @@
   .ed-controls{display:flex;flex-direction:column;gap:10px;margin-top:14px}
   .ed-controls label{font-size:12.5px;font-weight:700;color:var(--muted);display:flex;flex-direction:column;gap:5px}
   .ed-controls input[type=range]{width:100%}
+
+  /* ============ AJUSTES MOBILE (iPhone + Android) ============ */
+  html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+  /* área do notch (iPhone) na barra do topo */
+  .topbar .wrap,.ahead .wrap{padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+  /* iOS: campos com <16px dão zoom automático ao focar — força 16px */
+  input,select,textarea{font-size:16px}
+  /* toques mais confortáveis */
+  .icon-btn,.chip,.btn,.mini-btn,.pill,.save,.ghost-btn{touch-action:manipulation}
+
+  @media (max-width:640px){
+    .topbar .wrap{min-height:58px}
+    #logoBox img{max-width:190px}
+    .hero .wrap{padding:34px 18px 96px}
+    .hero h1{font-size:clamp(26px,7.5vw,34px)}
+    .hero p{font-size:15px}
+    .stat-row{gap:16px}
+    .stat b{font-size:20px}
+    .stat span{font-size:11px}
+    .board{margin-top:-64px}
+    .wrap{padding:0 16px}
+    .toolbar{padding:12px;gap:10px}
+    .chips{width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+    .chip{flex:0 0 auto}
+    .grid{grid-template-columns:1fr;gap:16px}
+    .promo h3{font-size:20px}
+    /* painel admin */
+    .a-wrap{padding:18px 14px 70px}
+    .a-intro h1{font-size:22px}
+    .section{padding:16px;border-radius:15px}
+    .ahead .wrap{min-height:56px}
+    .ahead .brand{font-size:14px}
+    .pill{padding:9px 12px;font-size:12.5px}
+    /* modais/editor ocupam melhor a tela */
+    .gate{padding:14px}
+    .gate .box{padding:20px}
+    .sheet-body{padding:18px}
+    .foot-grid{padding:34px 16px 24px}
+  }
+  /* telas bem estreitas (ex: iPhone SE) */
+  @media (max-width:360px){
+    .hero h1{font-size:24px}
+    .ahead-actions .pill{padding:8px 10px}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
