@@ -113,8 +113,9 @@ async function init(){
   document.getElementById('year').textContent=new Date().getFullYear();
   let s={};
   try{const r=await sb.from('settings').select('data').eq('id',1).maybeSingle();s=(r.data&&r.data.data)||{};}catch(e){}
-  document.getElementById('name').textContent=s.bioName||s.name||'JORNADA360';
-  document.getElementById('tag').textContent=s.bioTag||s.tag||'AGÊNCIA DE VIAGEM';
+  const nm=document.getElementById('name'),tg=document.getElementById('tag');
+  if(s.bioName!==undefined){nm.textContent=s.bioName;nm.style.display=s.bioName?'':'none';}
+  if(s.bioTag!==undefined){tg.textContent=s.bioTag;tg.style.display=s.bioTag?'':'none';}
   if(s.logo)document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;
   if(s.bioBio)document.querySelector('.bio').textContent=s.bioBio;
   if(s.bioBadge){document.getElementById('badgeTxt').textContent=s.bioBadge;document.getElementById('badge').style.display='';}
