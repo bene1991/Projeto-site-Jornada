@@ -90,21 +90,6 @@
   </main>
 
 <script>
-/* =========================================================
-   EDITE AQUI SEUS LINKS  (troque os # pelos endereços reais)
-   ========================================================= */
-const CONFIG = {
-  instagram: 'https://instagram.com/SEU_USUARIO',   // seu @ do Instagram
-  site:      '/',                                    // página de promoções (mesmo site)
-  maps:      '',                                     // link do Google Maps (opcional)
-  email:     '',                                     // seu e-mail (opcional)
-  // WhatsApp e logo são puxados do painel (Supabase) automaticamente
-};
-// Links extras opcionais — adicione quantos quiser
-const EXTRA_LINKS = [
-  // {title:'Catálogo de destinos', sub:'PDF completo', url:'https://...', icon:'doc'},
-];
-
 const ICONS={
   fire:'<path d="M12 2s5 4 5 9a5 5 0 01-10 0c0-2 1-3 1-3s0 2 2 2c0-3 2-5 2-8z"/>',
   wa:'<path d="M12 2a10 10 0 00-8.5 15.2L2 22l4.9-1.5A10 10 0 1012 2z"/>',
@@ -112,42 +97,42 @@ const ICONS={
   map:'<path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
   mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
   doc:'<path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6"/>',
+  link:'<path d="M10 13a5 5 0 007 0l2-2a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-2 2a5 5 0 007 7l1-1"/>',
   arrow:'<path d="M9 6l6 6-6 6"/>'
 };
 const svg=(p,fill)=>`<svg viewBox="0 0 24 24" fill="${fill||'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+// texto preto ou branco conforme a cor do botão
+function textOn(hex){hex=(hex||'#08518b').replace('#','');if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
+  const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
+  return (0.299*r+0.587*g+0.114*b)>165?'#152230':'#ffffff';}
 
 async function init(){
   document.getElementById('year').textContent=new Date().getFullYear();
-  // puxa logo, nome e WhatsApp do painel (Supabase)
   let s={};
   try{const r=await sb.from('settings').select('data').eq('id',1).maybeSingle();s=(r.data&&r.data.data)||{};}catch(e){}
-  if(s.name){document.getElementById('name').textContent=s.name;}
-  if(s.tag){document.getElementById('tag').textContent=s.tag;}
-  if(s.logo){document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;}
+  if(s.name)document.getElementById('name').textContent=s.name;
+  if(s.tag)document.getElementById('tag').textContent=s.tag;
+  if(s.logo)document.getElementById('logo').innerHTML=`<img src="${s.logo}" alt="logo">`;
+  if(s.bioBio)document.querySelector('.bio').textContent=s.bioBio;
   const wa=(s.wa||'').replace(/\D/g,'');
+  // fundo com foto (véu azul por cima pra legibilidade)
+  if(s.bioBg){document.body.style.background=
+    `linear-gradient(180deg, rgba(6,40,68,.72), rgba(4,28,48,.90)), url("${s.bioBg}") center/cover fixed`;}
 
-  // monta os botões
-  const L=[];
-  L.push({title:'Ver promoções ativas', sub:'Todos os pacotes do momento', url:CONFIG.site, icon:'fire', feat:true});
-  if(wa) L.push({title:'Falar no WhatsApp', sub:'Atendimento e reservas', url:`https://wa.me/${wa}?text=${encodeURIComponent('Olá! Vim pelo link da bio 😊')}`, icon:'wa'});
-  if(CONFIG.instagram && !CONFIG.instagram.includes('SEU_USUARIO')) L.push({title:'Instagram', sub:'Bastidores e destinos', url:CONFIG.instagram, icon:'ig'});
-  if(CONFIG.maps) L.push({title:'Onde estamos', sub:'Ver no mapa', url:CONFIG.maps, icon:'map'});
-  if(CONFIG.email) L.push({title:'E-mail', sub:CONFIG.email, url:'mailto:'+CONFIG.email, icon:'mail'});
-  EXTRA_LINKS.forEach(x=>L.push(x));
+  const resolve=u=>u==='wa'?(wa?`https://wa.me/${wa}?text=${encodeURIComponent('Olá! Vim pelo link da bio 😊')}`:''):(u==='/'?'/':u);
+  const links=(s.bioLinks&&s.bioLinks.length?s.bioLinks:[]).filter(l=>resolve(l.url));
+  document.getElementById('links').innerHTML=links.map(l=>{
+    const bg=l.color||'#08518b',fg=textOn(bg),url=resolve(l.url),ext=url.startsWith('http');
+    return `<a class="lnk" style="background:${bg};color:${fg}" href="${url}" ${ext?'target="_blank" rel="noopener"':''}>
+      <span class="ico" style="background:rgba(0,0,0,.16);color:${fg}">${svg(ICONS[l.icon]||ICONS.link)}</span>
+      <span class="txt">${l.title||''}${l.sub?`<small style="color:${fg};opacity:.7">${l.sub}</small>`:''}</span>
+      <span class="arrow" style="color:${fg}">${svg(ICONS.arrow)}</span>
+    </a>`;}).join('');
 
-  document.getElementById('links').innerHTML=L.map(l=>`
-    <a class="lnk ${l.feat?'feat':''}" href="${l.url}" ${l.url.startsWith('http')?'target="_blank" rel="noopener"':''}>
-      <span class="ico">${svg(ICONS[l.icon]||ICONS.arrow)}</span>
-      <span class="txt">${l.title}<small>${l.sub||''}</small></span>
-      <span class="arrow">${svg(ICONS.arrow)}</span>
-    </a>`).join('');
-
-  // redes no rodapé
-  const soc=[];
-  if(wa) soc.push({url:`https://wa.me/${wa}`, icon:'wa'});
-  if(CONFIG.instagram && !CONFIG.instagram.includes('SEU_USUARIO')) soc.push({url:CONFIG.instagram, icon:'ig'});
-  if(CONFIG.email) soc.push({url:'mailto:'+CONFIG.email, icon:'mail'});
-  document.getElementById('social').innerHTML=soc.map(s=>`<a href="${s.url}" ${s.url.startsWith('http')?'target="_blank" rel="noopener"':''}>${svg(ICONS[s.icon])}</a>`).join('');
+  // redes no rodapé (whatsapp + instagram, se houver)
+  const ig=(s.bioLinks||[]).find(l=>l.icon==='ig');
+  const soc=[];if(wa)soc.push({url:`https://wa.me/${wa}`,icon:'wa'});if(ig&&ig.url)soc.push({url:ig.url,icon:'ig'});
+  document.getElementById('social').innerHTML=soc.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${svg(ICONS[x.icon])}</a>`).join('');
 }
 init();
 </script>
