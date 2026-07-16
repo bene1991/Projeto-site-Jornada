@@ -59,6 +59,9 @@
   .lnk.glass:hover{background:rgba(255,255,255,.18)}
   .lnk.solid{box-shadow:0 10px 26px rgba(0,0,0,.22)}
   .lnk.solid:hover{filter:brightness(1.05)}
+  .lnk.metal{border:1px solid rgba(255,255,255,.4);
+    box-shadow:0 10px 26px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 6px rgba(0,0,0,.22)}
+  .lnk.metal:hover{filter:brightness(1.06)}
 
   /* redes sociais */
   .social{display:flex;gap:14px;margin-top:26px}
@@ -125,8 +128,10 @@ async function init(){
   document.getElementById('links').innerHTML=links.map(l=>{
     const url=resolve(l.url),ext=url.startsWith('http');
     let cls='glass',style='';
-    if(l.style==='solid'){const bg=l.color||'#08518b',fg=textOn(bg);
-      cls='solid';style=`background:linear-gradient(135deg, ${adjust(bg,22)}, ${adjust(bg,-6)});color:${fg}`;}
+    const bg=l.color||'#08518b',fg=textOn(bg);
+    if(l.style==='solid'){cls='solid';style=`background:linear-gradient(135deg, ${adjust(bg,22)}, ${adjust(bg,-6)});color:${fg}`;}
+    else if(l.style==='metal'){cls='metal';
+      style=`background:linear-gradient(135deg, ${adjust(bg,70)} 0%, ${adjust(bg,15)} 30%, ${adjust(bg,-35)} 52%, ${adjust(bg,50)} 74%, ${adjust(bg,-12)} 100%);color:${fg}`;}
     return `<a class="lnk ${cls}" style="${style}" href="${url}" ${ext?'target="_blank" rel="noopener"':''}>
       ${svg(ICONS[l.icon]||ICONS.link)}
       <span class="txt">${l.title||''}${l.sub?`<small>${l.sub}</small>`:''}</span>

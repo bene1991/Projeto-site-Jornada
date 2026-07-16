@@ -699,6 +699,7 @@ function renderBioAdmin(){
         <select onchange="bioSet(${i},'style',this.value)" title="Estilo">
           <option value="glass" ${(l.style||'glass')==='glass'?'selected':''}>Vidro (translúcido)</option>
           <option value="solid" ${l.style==='solid'?'selected':''}>Cor sólida</option>
+          <option value="metal" ${l.style==='metal'?'selected':''}>Metálico ✨</option>
         </select>
       </div>
       <input value="${escA(l.sub)}" placeholder="Descrição (opcional)" oninput="bioSet(${i},'sub',this.value)">
