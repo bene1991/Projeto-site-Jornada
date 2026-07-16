@@ -134,11 +134,14 @@ async function init(){
   const links=(s.bioLinks&&s.bioLinks.length?s.bioLinks:[]).filter(l=>resolve(l.url));
   document.getElementById('links').innerHTML=links.map(l=>{
     const url=resolve(l.url),ext=url.startsWith('http');
-    let cls='glass',style='';
-    const bg=l.color||'#08518b',fg=textOn(bg);
-    if(l.style==='solid'){cls='solid';style=`background:linear-gradient(135deg, ${adjust(bg,22)}, ${adjust(bg,-6)});color:${fg}`;}
+    let cls='glass',bgCss='';
+    const bg=l.color||'#08518b';
+    if(l.style==='solid'){cls='solid';bgCss=`background:linear-gradient(135deg, ${adjust(bg,22)}, ${adjust(bg,-6)});`;}
     else if(l.style==='metal'){cls='metal';
-      style=`background:linear-gradient(135deg, ${adjust(bg,70)} 0%, ${adjust(bg,15)} 30%, ${adjust(bg,-35)} 52%, ${adjust(bg,50)} 74%, ${adjust(bg,-12)} 100%);color:${fg}`;}
+      bgCss=`background:linear-gradient(135deg, ${adjust(bg,70)} 0%, ${adjust(bg,15)} 30%, ${adjust(bg,-35)} 52%, ${adjust(bg,50)} 74%, ${adjust(bg,-12)} 100%);`;}
+    // cor do texto: a escolhida no painel, ou automática (branco no vidro / contraste no resto)
+    const fg=l.textColor||(cls==='glass'?'#ffffff':textOn(bg));
+    const style=`${bgCss}color:${fg}`;
     return `<a class="lnk ${cls}" style="${style}" href="${url}" ${ext?'target="_blank" rel="noopener"':''}>
       ${svg(ICONS[l.icon]||ICONS.link)}
       <span class="txt">${l.title||''}${l.sub?`<small>${l.sub}</small>`:''}</span>
