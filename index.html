@@ -772,7 +772,9 @@ function drawDeco(){const c=document.getElementById('deco');if(!c)return;
 addEventListener('resize',drawDeco);
 
 /* ================= GERADOR DE ARTE (imagem para baixar) ================= */
-function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();
+  if(src&&!src.startsWith('data:'))i.crossOrigin='anonymous';   // evita "contaminar" o canvas
+  i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
 function rr(x,X,Y,W,H,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+W,Y,X+W,Y+H,r);x.arcTo(X+W,Y+H,X,Y+H,r);
   x.arcTo(X,Y+H,X,Y,r);x.arcTo(X,Y,X+W,Y,r);x.closePath();}
 function drawCover(x,img,W,H){const s=Math.max(W/img.width,H/img.height);const w=img.width*s,h=img.height*s;
@@ -926,10 +928,12 @@ function edSet(el,v){ed.L[el].scale=v/100;renderEditor();}
 function edReset(){ed.L=normLayout(null);
   document.getElementById('edLogoSize').value=100;document.getElementById('edPriceSize').value=100;renderEditor();}
 function edSave(){const p=edP();if(p){p.layout=ed.L;persist();}}
-function applyLayoutToAll(){
+async function applyLayoutToAll(){
   edSave();const L=JSON.parse(JSON.stringify(ed.L));
   promos.forEach(p=>p.layout=JSON.parse(JSON.stringify(L)));
-  persist();toast('Layout aplicado a todas as '+promos.length+' promoções ✓');
+  toast('Aplicando...');
+  const ok=await persist();
+  toast(ok?('Layout aplicado a todas as '+promos.length+' promoções ✓'):'Erro ao aplicar — verifique o login');
 }
 function edLogoChange(e){readImg(e,async raw=>{const r=await cropLogo(raw);applyLogoResult(r);
   ed.lg=await loadImg(r.url).catch(()=>null);applySettings();renderEditor();
@@ -938,8 +942,9 @@ function edLogoChange(e){readImg(e,async raw=>{const r=await cropLogo(raw);apply
 function edPhotoChange(e){readImg(e,async d=>{const c=await compress(d,1200,.82,'image/jpeg');toast('Enviando...');
   const url=await uploadImage(c,'destino')||c;edP().img=url;ed.bg=await loadImg(url).catch(()=>null);
   saveDestImage(edP().dest,url);persist();renderEditor();toast('Foto trocada ✓');});}
-async function exportEditor(){edSave();const p=edP();
-  const c=await buildArt(p);showArt(c.toDataURL('image/png'),(p.dest||'promo').replace(/[^\w]+/g,'-').toLowerCase());}
+async function exportEditor(){edSave();const p=edP();toast('Gerando arte...');
+  try{const c=await buildArt(p);showArt(c.toDataURL('image/png'),(p.dest||'promo').replace(/[^\w]+/g,'-').toLowerCase());}
+  catch(e){console.error(e);toast('Não consegui gerar a arte');}}
 
 /* init */
 (async()=>{
