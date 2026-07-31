@@ -927,15 +927,15 @@ function drawPrice(x,p,BRAND){
   F('800 28px');const xW=x.measureText((p.x||'10')+'x').width;
   const colW=Math.max(rsW,xW),gap=14,contentW=colW+gap+bigW+centsW+6;
   F('700 30px');const labelW=x.measureText('Valor por pessoa').width;
-  const pad=46,boxH=206,bw=Math.max(contentW,labelW)+pad*2;
+  const pad=48,boxH=198,bw=Math.max(contentW,labelW)+pad*2;
   x.fillStyle=BRAND;rr(x,0,0,bw,boxH,30);x.fill();
-  const cx=(bw-contentW)/2,base=128;
+  const cx=(bw-contentW)/2,base=120;
   x.fillStyle='#ffffff';x.textBaseline='alphabetic';x.textAlign='left';
-  F('800 34px');x.fillText('R$',cx,base-46);
-  F('800 28px');x.fillText((p.x||'10')+'x',cx,base-8);
+  F('800 34px');x.fillText('R$',cx,base-42);
+  F('800 28px');x.fillText((p.x||'10')+'x',cx,base-6);
   F('800 96px');x.fillText(reais,cx+colW+gap,base);
   F('800 40px');x.fillText(cents,cx+colW+gap+bigW+6,base-56);
-  F('700 30px');x.textAlign='center';x.fillText('Valor por pessoa',bw/2,boxH-40);x.textAlign='left';
+  F('700 30px');x.textAlign='center';x.fillText('Valor por pessoa',bw/2,boxH-38);x.textAlign='left';
   return{w:bw,h:boxH};
 }
 // desenha a arte a partir do layout; devolve os retângulos de cada elemento
