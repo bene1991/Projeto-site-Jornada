@@ -1051,6 +1051,7 @@ async function exportEditor(){edSave();const p=edP();toast('Gerando arte...');
 
 /* init */
 (async()=>{
+  if(location.search){try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
   await loadData();
   applySettings();renderSite();drawDeco();
   // se já estiver logado, mantém acesso admin fácil

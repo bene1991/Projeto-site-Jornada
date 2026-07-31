@@ -110,6 +110,8 @@ function textOn(hex){const[r,g,b]=rgbOf(hex);return (0.299*r+0.587*g+0.114*b)>16
 function adjust(hex,amt){const c=rgbOf(hex).map(v=>Math.max(0,Math.min(255,v+amt)));return `rgb(${c[0]},${c[1]},${c[2]})`;}
 
 async function init(){
+  // remove etiquetas de rastreio (utm_, fbclid) da barra de endereço
+  if(location.search){try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
   document.getElementById('year').textContent=new Date().getFullYear();
   let s={};
   try{const r=await sb.from('settings').select('data').eq('id',1).maybeSingle();s=(r.data&&r.data.data)||{};}catch(e){}
