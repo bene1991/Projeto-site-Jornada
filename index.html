@@ -1106,7 +1106,7 @@ async function exportEditor(){edSave();const p=edP();toast('Gerando arte...');
 /* init */
 (async()=>{
   if(location.search){try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
-  try{if(!sessionStorage.getItem('v_site')){sessionStorage.setItem('v_site','1');sb.from('visits').insert({page:'site'});}}catch(e){}
+  try{if(!sessionStorage.getItem('v_site')){sessionStorage.setItem('v_site','1');sb.from('visits').insert({page:'site'}).then(()=>{},()=>{});}}catch(e){}
   await loadData();
   applySettings();renderSite();drawDeco();
   // se já estiver logado, mantém acesso admin fácil
