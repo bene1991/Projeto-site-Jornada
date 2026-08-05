@@ -455,8 +455,13 @@
         <div class="field"><label>Categoria</label><input id="fCat" placeholder="Serra, Praia, Internacional..."></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Datas</label><input id="fDate" placeholder="16 à 21 de setembro"></div>
-        <div class="field"><label>Saída</label><input id="fOrigin" value="S. J. do Rio Preto"></div>
+        <div class="field"><label>Datas</label><input id="fDate" placeholder="02/10 à 07/10"></div>
+        <div class="field"><label>Saída (origem)</label><input id="fOrigin" value="S. J. do Rio Preto"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Cidade de destino (aeroporto)</label><input id="fDestino" placeholder="Rio de Janeiro"></div>
+        <div class="field"><label>Companhia aérea</label><input id="fAirline" value="Latam"></div>
+        <div class="field"><label>Noites</label><input id="fNights" placeholder="5" inputmode="numeric"></div>
       </div>
       <div class="row3">
         <div class="field"><label>Hotel / Pousada</label><input id="fHotel" placeholder="Pousada Boschetti"></div>
@@ -499,6 +504,17 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- MODAL TEXTO PRONTO -->
+<div class="gate" id="copyModal" style="align-items:flex-start;overflow:auto">
+  <div class="box" style="max-width:480px;padding:20px;text-align:left">
+    <h3 style="margin:0 0 4px">Texto da promoção 📋</h3>
+    <p style="margin:0 0 12px;color:var(--muted);font-size:13px">Copie e cole no WhatsApp ou Instagram.</p>
+    <textarea id="copyArea" readonly style="width:100%;height:300px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--paper);resize:vertical"></textarea>
+    <button class="save" style="width:100%;margin-top:12px" onclick="doCopyText()">📋 Copiar texto</button>
+    <button class="ghost-btn" style="width:100%;margin-top:8px" onclick="document.getElementById('copyModal').classList.remove('open')">Fechar</button>
+  </div>
+</div>
 
 <!-- EDITOR DE ARTE -->
 <div class="gate" id="editor" style="align-items:flex-start;overflow:auto;background:rgba(6,20,34,.9)">
@@ -852,6 +868,7 @@ function savePromo(){
   const dest=val('fDest');if(!dest){toast('Informe o destino');return;}
   const chosen = mode==='upload' ? artData : photoData;
   const obj={dest,cat:val('fCat')||'Novas',date:val('fDate'),origin:val('fOrigin'),
+    destino:val('fDestino'),airline:val('fAirline'),nights:val('fNights'),
     hotel:val('fHotel'),meal:val('fMeal'),x:val('fx')||'10',price:val('fPrice')||'0,00'};
   obj.mode=mode;
   const finalImg = chosen || (destImages[dest.toLowerCase()]||null);
@@ -876,6 +893,7 @@ function onDestBlur(){
 function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=id;
   document.getElementById('fDest').value=p.dest||'';document.getElementById('fCat').value=p.cat||'';
   document.getElementById('fDate').value=p.date||'';document.getElementById('fOrigin').value=p.origin||'';
+  document.getElementById('fDestino').value=p.destino||'';document.getElementById('fAirline').value=p.airline||'Latam';document.getElementById('fNights').value=p.nights||'';
   document.getElementById('fHotel').value=p.hotel||'';document.getElementById('fMeal').value=p.meal||'';
   document.getElementById('fx').value=p.x||'10';document.getElementById('fPrice').value=p.price||'';
   document.getElementById('btnSavePromo').textContent='Salvar alterações';
@@ -886,9 +904,9 @@ async function delPromo(id){promos=promos.filter(p=>p.id!==id);
   try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
   persist();renderPromoList();toast('Promoção removida');}
 function resetPromoForm(){editingId=null;artData=null;photoData=null;
-  ['fDest','fCat','fDate','fHotel','fPrice'].forEach(id=>document.getElementById(id).value='');
+  ['fDest','fCat','fDate','fHotel','fPrice','fDestino','fNights'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fMeal').value='Café da Manhã';document.getElementById('fx').value='10';
-  document.getElementById('fOrigin').value='S. J. do Rio Preto';
+  document.getElementById('fOrigin').value='S. J. do Rio Preto';document.getElementById('fAirline').value='Latam';
   ['dropArt','dropPhoto'].forEach(id=>{const d=document.getElementById(id);d.classList.remove('has');});
   document.getElementById('dropArt').innerHTML='<span>📤 Toque para enviar a arte<br><small>a imagem quadrada que você já faz no Canva</small></span>';
   document.getElementById('dropPhoto').innerHTML='<span>🏞️ Toque para enviar a foto do destino<br><small>fica atrás no card, com os dados por cima</small></span>';
@@ -903,10 +921,40 @@ function renderPromoList(){
     <div class="info"><b>${esc(p.dest)}</b><span>${esc(p.date||'')} · R$ ${esc(p.price)} · ${esc(p.cat||'')}</span></div>
     <div class="acts">
       <button class="mini-btn" onclick="openEditor(${p.id})" style="border-color:var(--brand);color:var(--brand)">🎨 Arte</button>
+      <button class="mini-btn" onclick="copyText(${p.id})">📋 Texto</button>
       <button class="mini-btn" onclick="editPromo(${p.id})">Editar dados</button>
       <button class="mini-btn del" onclick="delPromo(${p.id})">Remover</button>
     </div></div>`).join('');
 }
+
+/* ================= TEXTO PRONTO (WhatsApp) ================= */
+function buildText(p){
+  return `Pacote ${p.dest}
+🗓️ ${p.date||''}
+
+Origem: ${p.origin||''}
+Destino: ${p.destino||p.dest}
+
+✈️ Ida e volta - voos operados pela ${p.airline||'Latam'}
+
+🛏️  ${p.nights||'5'} noites no ${p.hotel||''}
+
+Para pacotes personalizados, chame no privado e montamos o ideal para você!
+
+⚠️ Tarifa sujeita à disponibilidade
+
+💬 Já tem algum orçamento? Se quiser, nos envie que analisamos com carinho para você.`;
+}
+function copyText(id){
+  const p=promos.find(x=>x.id===id);if(!p)return;
+  const txt=buildText(p);
+  document.getElementById('copyArea').value=txt;
+  document.getElementById('copyModal').classList.add('open');
+  navigator.clipboard&&navigator.clipboard.writeText(txt).then(()=>toast('Texto copiado ✓'),()=>{});
+}
+function doCopyText(){const ta=document.getElementById('copyArea');ta.select();
+  try{navigator.clipboard.writeText(ta.value);}catch(e){document.execCommand('copy');}
+  toast('Texto copiado ✓');}
 
 /* ================= UTIL ================= */
 function pick(id){document.getElementById(id).click();}
