@@ -25,6 +25,17 @@ create table if not exists destinations (
   image_url text
 );
 
+-- 4) Visitas (monitoramento)
+create table if not exists visits (
+  id         bigint generated always as identity primary key,
+  page       text,
+  created_at timestamptz not null default now()
+);
+alter table visits enable row level security;
+create policy "public insert visits" on visits for insert with check (true);
+create policy "auth read visits"     on visits for select using (auth.role() = 'authenticated');
+create index if not exists visits_created_idx on visits (created_at);
+
 -- ============================================================
 -- Segurança (RLS): todo mundo LÊ, só logado ESCREVE
 -- ============================================================

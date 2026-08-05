@@ -112,6 +112,7 @@ function adjust(hex,amt){const c=rgbOf(hex).map(v=>Math.max(0,Math.min(255,v+amt
 async function init(){
   // remove etiquetas de rastreio (utm_, fbclid) da barra de endereço
   if(location.search){try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
+  try{if(!sessionStorage.getItem('v_bio')){sessionStorage.setItem('v_bio','1');sb.from('visits').insert({page:'bio'});}}catch(e){}
   document.getElementById('year').textContent=new Date().getFullYear();
   let s={};
   try{const r=await sb.from('settings').select('data').eq('id',1).maybeSingle();s=(r.data&&r.data.data)||{};}catch(e){}

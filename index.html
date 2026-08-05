@@ -179,6 +179,19 @@
   .ghost-btn{background:var(--ice);color:var(--brand);border:0;border-radius:11px;padding:11px 16px;font-weight:700;font-size:13.5px}
   .bio-row{border:1px solid var(--line);border-radius:13px;padding:12px;margin-bottom:10px;background:var(--paper);
     display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center}
+  .mtiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  @media(max-width:600px){.mtiles{grid-template-columns:1fr 1fr}}
+  .mtile{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:14px 16px}
+  .mtile b{display:block;font-size:26px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+  .mtile span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:90px;margin-top:6px}
+  .bars .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+  .bars .bfill{width:100%;background:linear-gradient(180deg,var(--brand),var(--brand-deep));border-radius:6px 6px 3px 3px;min-height:3px;transition:height .3s}
+  .bars .bval{font-size:11px;font-weight:700;color:var(--ink)}
+  .bars .blabel{font-size:10px;color:var(--muted)}
+  .split{display:flex;gap:10px;margin-top:14px}
+  .split .sp{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:10px 14px;font-size:13px;color:var(--muted)}
+  .split .sp b{color:var(--ink);font-size:18px;display:block}
   .bio-row .swcol{display:flex;flex-direction:column;gap:6px}
   .bio-row .swatch{width:44px;height:33px;border-radius:9px;border:1px solid var(--line);padding:0;overflow:hidden;cursor:pointer}
   .bio-row .bio-fields{display:flex;flex-direction:column;gap:7px;min-width:0}
@@ -346,6 +359,13 @@
 
   <div class="a-wrap">
     <div class="a-intro"><h1>Configurar o site</h1><p>Tudo o que você mudar aqui aparece no site na hora.</p></div>
+
+    <!-- MONITORAMENTO DE VISITAS -->
+    <div class="section">
+      <h2>📊 Visitas <button class="ghost-btn" style="margin-left:auto;font-size:12px;padding:6px 12px" onclick="loadStats()">↻ Atualizar</button></h2>
+      <p class="desc">Quantas pessoas estão entrando nos seus links.</p>
+      <div id="statsBox"><p style="color:var(--muted);font-size:14px">Carregando…</p></div>
+    </div>
 
     <!-- IDENTIDADE -->
     <div class="section">
@@ -565,6 +585,40 @@ async function loadData(){
     if(!promos.length){promos=seed.map(p=>Object.assign({},p));await persist();}
   }catch(e){toast('Sem conexão com o servidor');console.error(e);}
 }
+async function loadStats(){
+  const box=document.getElementById('statsBox');
+  try{
+    const d=new Date(),startToday=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+    const weekStart=new Date(startToday.getTime()-6*864e5);
+    const cnt=q=>q.then(r=>r.count||0);
+    const [total,today,rowsRes]=await Promise.all([
+      cnt(sb.from('visits').select('*',{count:'exact',head:true})),
+      cnt(sb.from('visits').select('*',{count:'exact',head:true}).gte('created_at',startToday.toISOString())),
+      sb.from('visits').select('page,created_at').gte('created_at',weekStart.toISOString())
+    ]);
+    const rows=rowsRes.data||[];
+    // 7 dias
+    const days=[];for(let i=6;i>=0;i--){const dd=new Date(startToday.getTime()-i*864e5);days.push({d:dd,n:0});}
+    let site=0,bio=0;
+    rows.forEach(r=>{const t=new Date(r.created_at);const k=days.find(x=>x.d.toDateString()===new Date(t.getFullYear(),t.getMonth(),t.getDate()).toDateString());if(k)k.n++;
+      if(r.page==='bio')bio++;else site++;});
+    const max=Math.max(1,...days.map(x=>x.n));
+    const wd=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    box.innerHTML=`
+      <div class="mtiles">
+        <div class="mtile"><b>${total}</b><span>Total</span></div>
+        <div class="mtile"><b>${today}</b><span>Hoje</span></div>
+        <div class="mtile"><b>${rows.length}</b><span>Últimos 7 dias</span></div>
+      </div>
+      <div class="bars">${days.map(x=>`<div class="bcol"><span class="bval">${x.n||''}</span>
+        <div class="bfill" style="height:${Math.round(x.n/max*100)}%"></div>
+        <span class="blabel">${wd[x.d.getDay()]}</span></div>`).join('')}</div>
+      <div class="split">
+        <div class="sp"><b>${site}</b>🏖️ Site (7 dias)</div>
+        <div class="sp"><b>${bio}</b>🔗 Bio (7 dias)</div>
+      </div>`;
+  }catch(e){box.innerHTML='<p style="color:var(--muted);font-size:14px">Não consegui carregar as visitas. Rode o SQL da tabela <b>visits</b> no Supabase.</p>';console.error(e);}
+}
 async function persist(){
   try{
     await sb.from('settings').upsert({id:1,data:settings});
@@ -671,7 +725,7 @@ async function tryLogin(){
   closeGate();showAdmin();
 }
 function showAdmin(){document.getElementById('site').classList.add('hide');document.getElementById('admin').classList.remove('hide');
-  loadAdminFields();renderPromoList();window.scrollTo(0,0);}
+  loadAdminFields();renderPromoList();loadStats();window.scrollTo(0,0);}
 function showSite(){document.getElementById('admin').classList.add('hide');document.getElementById('site').classList.remove('hide');
   applySettings();renderSite();drawDeco();window.scrollTo(0,0);}
 async function logout(){try{await sb.auth.signOut();}catch(e){}showSite();}
@@ -1052,6 +1106,7 @@ async function exportEditor(){edSave();const p=edP();toast('Gerando arte...');
 /* init */
 (async()=>{
   if(location.search){try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}}
+  try{if(!sessionStorage.getItem('v_site')){sessionStorage.setItem('v_site','1');sb.from('visits').insert({page:'site'});}}catch(e){}
   await loadData();
   applySettings();renderSite();drawDeco();
   // se já estiver logado, mantém acesso admin fácil
