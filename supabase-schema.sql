@@ -35,6 +35,9 @@ alter table visits enable row level security;
 create policy "public insert visits" on visits for insert with check (true);
 create policy "auth read visits"     on visits for select using (auth.role() = 'authenticated');
 create index if not exists visits_created_idx on visits (created_at);
+-- permissões de tabela (necessário além da policy)
+grant insert on table visits to anon;
+grant select, insert on table visits to authenticated;
 
 -- ============================================================
 -- Segurança (RLS): todo mundo LÊ, só logado ESCREVE
