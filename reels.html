@@ -134,7 +134,11 @@ function drawIntro(t){
   else{x.globalAlpha=e;F('800 130px');x.fillStyle='#fff';x.textAlign='center';x.fillText(settings.name||'JORNADA360',W/2,H/2-260);x.globalAlpha=1;}
   const e2=easeOut(Math.max(0,Math.min(1,(t-.35)*1.8)));
   x.globalAlpha=e2;x.textAlign='center';
-  F('800 90px');x.fillStyle='#fff';x.fillText('PROMOÇÕES',W/2,H/2+180);x.fillText('ATIVAS ✈️',W/2,H/2+300);
+  F('800 90px');x.fillStyle='#fff';x.textAlign='center';
+  x.fillText('PROMOÇÕES',W/2,H/2+180);
+  const at='ATIVAS',atW=x.measureText(at).width;
+  x.fillText(at,W/2,H/2+300);
+  x.textAlign='left';x.fillText('✈️',W/2+atW/2+22,H/2+300);x.textAlign='center';
   x.globalAlpha=1;
 }
 function drawPromo(t,p){
