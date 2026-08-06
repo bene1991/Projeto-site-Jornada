@@ -709,12 +709,13 @@ function applySettings(){
   hideIf('footerTxt',!settings.footer);
   document.getElementById('heroTitle').style.display=settings.title?'':'none';
 }
-const cats=()=>['Todos',...new Set(promos.map(p=>p.cat).filter(Boolean))];
+const cats=()=>['Todos',...new Set(promos.filter(p=>p.active!==false).map(p=>p.cat).filter(Boolean))];
 function renderSite(){
   const q=(document.getElementById('q').value||'').toLowerCase();
-  set('statCount',promos.length);
+  const ativos=promos.filter(p=>p.active!==false);
+  set('statCount',ativos.length);
   document.getElementById('chips').innerHTML=cats().map(c=>`<button class="chip ${c===activeCat?'active':''}" onclick="setCat('${c}')">${c}</button>`).join('');
-  const list=promos.filter(p=>(activeCat==='Todos'||p.cat===activeCat)&&(p.dest.toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q)));
+  const list=ativos.filter(p=>(activeCat==='Todos'||p.cat===activeCat)&&(p.dest.toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q)));
   const g=document.getElementById('grid');
   g.innerHTML=list.length?list.map(card).join(''):`<div class="empty">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
@@ -940,6 +941,9 @@ function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=
   document.getElementById('btnCancelEdit').classList.remove('hide');
   document.getElementById('fDest').scrollIntoView({behavior:'smooth',block:'center'});
 }
+function toggleActive(id){const p=promos.find(x=>x.id===id);if(!p)return;
+  p.active=(p.active===false);persist();renderPromoList();
+  toast(p.active===false?'Promoção pausada (fora do site)':'Promoção ativada ✓');}
 async function delPromo(id){promos=promos.filter(p=>p.id!==id);
   try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
   persist();renderPromoList();toast('Promoção removida');}
@@ -956,15 +960,16 @@ function resetPromoForm(){editingId=null;artData=null;photoData=null;
 function renderPromoList(){
   const el=document.getElementById('promoList');
   if(!promos.length){el.innerHTML='<p style="color:var(--muted);font-size:14px">Nenhuma promoção ainda.</p>';return;}
-  el.innerHTML=promos.map(p=>`<div class="promo-row">
+  el.innerHTML=promos.map(p=>{const off=p.active===false;return `<div class="promo-row" style="${off?'opacity:.55':''}">
     ${p.img?`<img class="thumb" src="${p.img}">`:`<div class="thumb-empty">${ic('img')}</div>`}
-    <div class="info"><b>${esc(p.dest)}</b><span>${esc(p.date||'')} · R$ ${esc(p.price)} · ${esc(p.cat||'')}</span></div>
+    <div class="info"><b>${esc(p.dest)} ${off?'<span style=\"color:#e5a23c;font-size:12px\">⏸ pausada</span>':'<span style=\"color:#1E9E6A;font-size:12px\">● ativa</span>'}</b><span>${esc(p.date||'')} · R$ ${esc(p.price)} · ${esc(p.cat||'')}</span></div>
     <div class="acts">
+      <button class="mini-btn" onclick="toggleActive(${p.id})" style="${off?'border-color:#1E9E6A;color:#1E9E6A':'border-color:#e5a23c;color:#e5a23c'}">${off?'▶ Ativar':'⏸ Pausar'}</button>
       <button class="mini-btn" onclick="openEditor(${p.id})" style="border-color:var(--brand);color:var(--brand)">🎨 Arte</button>
       <button class="mini-btn" onclick="copyText(${p.id})">📋 Texto</button>
       <button class="mini-btn" onclick="editPromo(${p.id})">Editar dados</button>
       <button class="mini-btn del" onclick="delPromo(${p.id})">Remover</button>
-    </div></div>`).join('');
+    </div></div>`;}).join('');
 }
 
 /* ================= TEXTO PRONTO (WhatsApp) ================= */

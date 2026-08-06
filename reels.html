@@ -79,7 +79,7 @@ async function boot(){
       sb.from('promos').select('id,data,pos').order('pos',{ascending:true})
     ]);
     settings=(s.data&&s.data.data)||{};
-    promos=(pr.data||[]).map(r=>r.data).slice(0,5); // até 5 promos
+    promos=(pr.data||[]).map(r=>r.data).filter(p=>p.active!==false).slice(0,5); // até 5 promos ativas
     if(settings.logo)logoImg=await loadImg(settings.logo);
     for(const p of promos){if(p.img)imgs[p.img]=await loadImg(p.img);}
     if(!promos.length){status('Nenhuma promoção cadastrada.');return;}
