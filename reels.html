@@ -137,7 +137,7 @@ function drawPromo(t,p){
   const ep=easeBack(Math.min(1,Math.max(0,(t-.35)*2)));
   const parts=(p.price||'0,00').split(','),reais=parts[0],cents=','+(parts[1]||'00');
   F('800 120px');const bw=x.measureText(reais).width;
-  const boxW=bw+360,boxH=190,bx=80,by=H-260;
+  const boxH=190,bx=70,by=H-90-boxH,boxW=bw+360;
   x.save();x.translate(bx+boxW/2,by+boxH/2);x.scale(ep,ep);x.translate(-(bx+boxW/2),-(by+boxH/2));
   x.fillStyle=BRAND;rr(bx,by,boxW,boxH,28);x.fill();
   x.fillStyle='#fff';x.textAlign='left';
