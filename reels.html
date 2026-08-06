@@ -60,6 +60,8 @@ const status=m=>document.getElementById('status').textContent=m;
 function loadImg(src){return new Promise(res=>{if(!src)return res(null);const i=new Image();
   if(!src.startsWith('data:'))i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=()=>res(null);i.src=src;});}
 async function boot(){
+  try{const saved=localStorage.getItem('reels_sec');
+    if(saved){document.getElementById('secRange').value=saved;SLIDE=Math.round(+saved*1000);document.getElementById('secVal').textContent=saved;}}catch(e){}
   try{
     const [s,pr]=await Promise.all([
       sb.from('settings').select('data').eq('id',1).maybeSingle(),
@@ -79,6 +81,7 @@ async function boot(){
 const INTRO=2800, OUTRO=3600, FADE=0.12;
 let SLIDE=7000;
 function setSec(v){SLIDE=Math.round(+v*1000);document.getElementById('secVal').textContent=v;
+  try{localStorage.setItem('reels_sec',v);}catch(e){}
   if(promos.length)status(`${promos.length} promoção(ões) · vídeo ~${Math.round(totalDur()/1000)}s`);}
 function segments(){
   const segs=[{t:'intro',d:INTRO}];
