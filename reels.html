@@ -79,7 +79,9 @@ async function boot(){
       sb.from('promos').select('id,data,pos').order('pos',{ascending:true})
     ]);
     settings=(s.data&&s.data.data)||{};
-    promos=(pr.data||[]).map(r=>r.data).filter(p=>p.active!==false).slice(0,5); // até 5 promos ativas
+    promos=(pr.data||[]).map(r=>r.data).filter(p=>p.active!==false)
+      .sort((a,b)=>{const x=a.depDate||'9999-99-99',y=b.depDate||'9999-99-99';return x<y?-1:x>y?1:0;})
+      .slice(0,5); // até 5 promos ativas, por data de embarque
     if(settings.logo)logoImg=await loadImg(settings.logo);
     for(const p of promos){if(p.img)imgs[p.img]=await loadImg(p.img);}
     if(!promos.length){status('Nenhuma promoção cadastrada.');return;}

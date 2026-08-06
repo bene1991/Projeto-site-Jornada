@@ -461,8 +461,9 @@
         <div class="field"><label>Destino</label><input id="fDest" placeholder="Ex: Gramado" onblur="onDestBlur()"></div>
         <div class="field"><label>Categoria</label><input id="fCat" placeholder="Serra, Praia, Internacional..."></div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Datas</label><input id="fDate" placeholder="02/10 à 07/10"></div>
+      <div class="row3">
+        <div class="field"><label>Datas (texto no card)</label><input id="fDate" placeholder="02/10 à 07/10"></div>
+        <div class="field"><label>Data de embarque (ordena o site)</label><input id="fDepDate" type="date"></div>
         <div class="field"><label>Saída (origem)</label><input id="fOrigin" value="S. J. do Rio Preto"></div>
       </div>
       <div class="row3">
@@ -710,9 +711,10 @@ function applySettings(){
   document.getElementById('heroTitle').style.display=settings.title?'':'none';
 }
 const cats=()=>['Todos',...new Set(promos.filter(p=>p.active!==false).map(p=>p.cat).filter(Boolean))];
+const byDep=(a,b)=>{const x=a.depDate||'9999-99-99',y=b.depDate||'9999-99-99';return x<y?-1:x>y?1:0;};
 function renderSite(){
   const q=(document.getElementById('q').value||'').toLowerCase();
-  const ativos=promos.filter(p=>p.active!==false);
+  const ativos=promos.filter(p=>p.active!==false).sort(byDep);
   set('statCount',ativos.length);
   document.getElementById('chips').innerHTML=cats().map(c=>`<button class="chip ${c===activeCat?'active':''}" onclick="setCat('${c}')">${c}</button>`).join('');
   const list=ativos.filter(p=>(activeCat==='Todos'||p.cat===activeCat)&&(p.dest.toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q)));
@@ -907,7 +909,7 @@ function dropShow(id,d,fit){const el=document.getElementById(id);el.classList.ad
 function savePromo(){
   const dest=val('fDest');if(!dest){toast('Informe o destino');return;}
   const chosen = mode==='upload' ? artData : photoData;
-  const obj={dest,cat:val('fCat')||'Novas',date:val('fDate'),origin:val('fOrigin'),
+  const obj={dest,cat:val('fCat')||'Novas',date:val('fDate'),depDate:val('fDepDate'),origin:val('fOrigin'),
     destino:val('fDestino'),airline:val('fAirline'),nights:val('fNights'),avista:val('fAvista'),
     hotel:val('fHotel'),meal:val('fMeal'),x:val('fx')||'10',price:val('fPrice')||'0,00'};
   obj.mode=mode;
@@ -933,6 +935,7 @@ function onDestBlur(){
 function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=id;
   document.getElementById('fDest').value=p.dest||'';document.getElementById('fCat').value=p.cat||'';
   document.getElementById('fDate').value=p.date||'';document.getElementById('fOrigin').value=p.origin||'';
+  document.getElementById('fDepDate').value=p.depDate||'';
   document.getElementById('fDestino').value=p.destino||'';document.getElementById('fAirline').value=p.airline||'Latam';document.getElementById('fNights').value=p.nights||'';
   document.getElementById('fHotel').value=p.hotel||'';document.getElementById('fMeal').value=p.meal||'';
   document.getElementById('fx').value=p.x||'10';document.getElementById('fPrice').value=p.price||'';
@@ -948,7 +951,7 @@ async function delPromo(id){promos=promos.filter(p=>p.id!==id);
   try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
   persist();renderPromoList();toast('Promoção removida');}
 function resetPromoForm(){editingId=null;artData=null;photoData=null;
-  ['fDest','fCat','fDate','fHotel','fPrice','fDestino','fNights','fAvista'].forEach(id=>document.getElementById(id).value='');
+  ['fDest','fCat','fDate','fDepDate','fHotel','fPrice','fDestino','fNights','fAvista'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fMeal').value='Café da Manhã';document.getElementById('fx').value='10';
   document.getElementById('fOrigin').value='S. J. do Rio Preto';document.getElementById('fAirline').value='Latam';
   ['dropArt','dropPhoto'].forEach(id=>{const d=document.getElementById(id);d.classList.remove('has');});
@@ -960,7 +963,7 @@ function resetPromoForm(){editingId=null;artData=null;photoData=null;
 function renderPromoList(){
   const el=document.getElementById('promoList');
   if(!promos.length){el.innerHTML='<p style="color:var(--muted);font-size:14px">Nenhuma promoção ainda.</p>';return;}
-  el.innerHTML=promos.map(p=>{const off=p.active===false;return `<div class="promo-row" style="${off?'opacity:.55':''}">
+  el.innerHTML=[...promos].sort(byDep).map(p=>{const off=p.active===false;return `<div class="promo-row" style="${off?'opacity:.55':''}">
     ${p.img?`<img class="thumb" src="${p.img}">`:`<div class="thumb-empty">${ic('img')}</div>`}
     <div class="info"><b>${esc(p.dest)} ${off?'<span style=\"color:#e5a23c;font-size:12px\">⏸ pausada</span>':'<span style=\"color:#1E9E6A;font-size:12px\">● ativa</span>'}</b><span>${esc(p.date||'')} · R$ ${esc(p.price)} · ${esc(p.cat||'')}</span></div>
     <div class="acts">
