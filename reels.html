@@ -106,7 +106,7 @@ function drawIntro(t){
 }
 function drawPromo(t,p){
   const img=imgs[p.img];
-  if(img){cover(img,W,H,0,-60*t,1.08+0.14*t);}else bgBrand();
+  if(img){cover(img,W,H,0,-24*t,1.03+0.05*t);}else bgBrand();
   // véu
   const g=x.createLinearGradient(0,H*.35,0,H);g.addColorStop(0,'rgba(4,20,34,0)');g.addColorStop(.55,'rgba(4,20,34,.55)');g.addColorStop(1,'rgba(4,20,34,.96)');
   x.fillStyle=g;x.fillRect(0,0,W,H);
@@ -194,7 +194,10 @@ function record(){
   if(!cv.captureStream||!window.MediaRecorder){status('Este navegador não grava vídeo. Use o Chrome ou o Safari atualizado.');return;}
   const mime=pickMime();
   if(!mime){status('Formato de vídeo não suportado neste aparelho.');return;}
-  let stream;try{stream=cv.captureStream(30);}catch(e){status('Não consegui iniciar a gravação.');return;}
+  let stream,vtrack=null,manual=false;
+  try{stream=cv.captureStream(0);vtrack=stream.getVideoTracks()[0];
+    if(vtrack&&typeof vtrack.requestFrame==='function')manual=true;else stream=cv.captureStream(30);}
+  catch(e){try{stream=cv.captureStream(30);}catch(e2){status('Não consegui iniciar a gravação.');return;}}
   try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:16000000});}
   catch(e){try{rec=new MediaRecorder(stream);}catch(e2){status('Erro ao iniciar a gravação neste aparelho.');return;}}
   const chunks=[];rec.ondataavailable=e=>e.data&&e.data.size&&chunks.push(e.data);
@@ -223,6 +226,7 @@ function record(){
   const t0=performance.now(),total=totalDur();
   try{rec.start()}catch(e){status('Erro ao iniciar: '+e.message);rb.textContent='⏺ Gravar vídeo';rb.disabled=false;return;}
   function recLoop(ts){const el=ts-t0;drawFrame(el);
+    if(manual&&vtrack)try{vtrack.requestFrame();}catch(e){}   // empurra o quadro em tempo real (corrige velocidade)
     status('Gravando… '+Math.min(Math.ceil(total/1000),Math.ceil(el/1000))+'s / '+Math.ceil(total/1000)+'s');
     if(el<total)raf=requestAnimationFrame(recLoop);
     else{try{rec.stop()}catch(e){rb.textContent='⏺ Gravar vídeo';rb.disabled=false;}}
