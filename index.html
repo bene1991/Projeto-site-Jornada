@@ -329,19 +329,17 @@
     <div class="wrap foot-grid">
       <div class="foot-col">
         <div class="foot-brand" id="footBrand">JORNADA360</div>
-        <p>Sua agência de viagem em São José do Rio Preto. Pacotes com aéreo + hospedagem, roteiros e experiências — do sonho ao embarque, a gente cuida de tudo.</p>
+        <p id="footAbout"></p>
       </div>
-      <div class="foot-col">
+      <div class="foot-col" id="footAtendCol">
         <h4>Atendimento</h4>
         <a id="footWa" href="#" target="_blank">💬 Falar no WhatsApp</a>
         <a href="#topo">🔝 Ver promoções ativas</a>
-        <span>Seg a Sex, 9h às 18h · Sáb 9h às 13h</span>
+        <span id="footHours"></span>
       </div>
-      <div class="foot-col">
+      <div class="foot-col" id="footStepsCol">
         <h4>Como funciona</h4>
-        <span>1. Escolha a promoção</span>
-        <span>2. Fale com a gente no WhatsApp</span>
-        <span>3. Reserve e parcele em até 10x</span>
+        <div id="footSteps"></div>
       </div>
     </div>
     <div class="foot-bottom wrap">
@@ -413,7 +411,10 @@
       <h2>📱 Contato &amp; rodapé</h2>
       <p class="desc">Número que recebe os pedidos e o texto do rodapé.</p>
       <div class="field"><label>WhatsApp (só números, com DDD)</label><input id="sWa" placeholder="5517999999999"></div>
-      <div class="field"><label>Rodapé</label><input id="sFooter"></div>
+      <div class="field"><label>Rodapé (linha final)</label><input id="sFooter"></div>
+      <div class="field"><label>Sobre a agência (rodapé)</label><textarea id="sFootAbout"></textarea></div>
+      <div class="field"><label>Horário de atendimento (rodapé)</label><input id="sFootHours"></div>
+      <div class="field"><label>Como funciona — 1 passo por linha (rodapé)</label><textarea id="sFootSteps" style="min-height:90px"></textarea></div>
       <button class="save" onclick="saveSettings()">Salvar identidade &amp; textos</button>
     </div>
 
@@ -576,6 +577,9 @@ const defaults={
   sub:'Pacotes com aéreo + hospedagem selecionados pela nossa equipe. Preços por pessoa, parcelados, prontos pra reservar pelo WhatsApp.',
   stat2:'10x', stat2l:'Sem juros', stat3:'Rio Preto', stat3l:'Nossa base',
   wa:'', footer:'Feito com ♥ pela Jornada360 — compartilhe este link com seus clientes.',
+  footAbout:'Sua agência de viagem em São José do Rio Preto. Pacotes com aéreo + hospedagem, roteiros e experiências — do sonho ao embarque, a gente cuida de tudo.',
+  footHours:'Seg a Sex, 9h às 18h · Sáb 9h às 13h',
+  footSteps:'1. Escolha a promoção\n2. Fale com a gente no WhatsApp\n3. Reserve e parcele em até 10x',
   logoSize:50, logoBg:null,
   bioBg:null, bioBadge:'Promoções ativas agora', bioLogoSize:74,
   bioBio:'Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️',
@@ -688,6 +692,14 @@ function applySettings(){
   const num=(settings.wa||'').replace(/\D/g,'');
   const fw=document.getElementById('footWa');
   fw.href=num?`https://wa.me/${num}`:'#';fw.style.display=num?'':'none';
+  // rodapé editável
+  document.getElementById('footAbout').textContent=settings.footAbout||'';
+  document.getElementById('footAbout').style.display=settings.footAbout?'':'none';
+  document.getElementById('footHours').textContent=settings.footHours||'';
+  document.getElementById('footHours').style.display=settings.footHours?'':'none';
+  const steps=(settings.footSteps||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('footSteps').innerHTML=steps.map(s=>`<span>${esc(s)}</span>`).join('');
+  document.getElementById('footStepsCol').style.display=steps.length?'':'none';
   // esconde blocos vazios
   const hideIf=(id,cond)=>document.getElementById(id).style.display=cond?'none':'';
   hideIf('eyebrowBox',!settings.eyebrow);
@@ -753,10 +765,13 @@ function showAdmin(){document.getElementById('site').classList.add('hide');docum
   loadAdminFields();renderPromoList();loadStats();setupCollapse();window.scrollTo(0,0);}
 function setupCollapse(){
   document.querySelectorAll('#admin .section > h2').forEach(h=>{
-    if(h.querySelector('.chev'))return;
-    const c=document.createElement('span');c.className='chev';c.textContent='▾';h.appendChild(c);
-    h.addEventListener('click',e=>{if(e.target.closest('button'))return;h.parentElement.classList.toggle('collapsed');});
+    if(!h.querySelector('.chev')){
+      const c=document.createElement('span');c.className='chev';c.textContent='▾';h.appendChild(c);
+      h.addEventListener('click',e=>{if(e.target.closest('button'))return;h.parentElement.classList.toggle('collapsed');});
+    }
+    h.parentElement.classList.add('collapsed');   // abre tudo minimizado
   });
+  const b=document.getElementById('collapseBtn');if(b)b.textContent='▸ Expandir tudo';
 }
 function toggleAllSections(){
   const secs=[...document.querySelectorAll('#admin .section')];
@@ -771,7 +786,8 @@ async function logout(){try{await sb.auth.signOut();}catch(e){}showSite();}
 /* ================= ADMIN: SETTINGS ================= */
 function loadAdminFields(){
   const m={sName:'name',sTag:'tag',sEyebrow:'eyebrow',sTitle:'title',sSub:'sub',
-    sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer'};
+    sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer',
+    sFootAbout:'footAbout',sFootHours:'footHours',sFootSteps:'footSteps'};
   for(const id in m)document.getElementById(id).value=settings[m[id]]||'';
   document.getElementById('sLogoSize').value=settings.logoSize||50;
   document.getElementById('logoSizeVal').textContent=settings.logoSize||50;
@@ -834,7 +850,8 @@ async function saveBio(){settings.bioBio=val('sBioBio');settings.bioBadge=val('s
   const ok=await persist();toast(ok?'Links da bio salvos ✓':'Erro ao salvar — verifique o login');}
 function saveSettings(){
   const m={sName:'name',sTag:'tag',sEyebrow:'eyebrow',sTitle:'title',sSub:'sub',
-    sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer'};
+    sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sFooter:'footer',
+    sFootAbout:'footAbout',sFootHours:'footHours',sFootSteps:'footSteps'};
   for(const id in m)settings[m[id]]=val(id);
   persist();applySettings();toast('Salvo! ✓');
 }
