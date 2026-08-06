@@ -50,6 +50,17 @@
   <div class="status" id="status">Carregando promoções…</div>
   <p class="tips">💡 No celular: toque em <b>Gravar vídeo</b> → depois em <b>📲 Salvar / Compartilhar</b> (vai direto pro Instagram/galeria, em MP4). No PC: <b>Gravar vídeo</b> → <b>⬇️ Baixar</b>.</p>
 
+  <div id="gate" style="position:fixed;inset:0;background:linear-gradient(160deg,#08518b,#052f52);display:flex;align-items:center;justify-content:center;padding:20px;z-index:999">
+    <div style="background:#fff;color:#152230;border-radius:18px;padding:26px;max-width:340px;width:100%;text-align:center">
+      <h3 style="margin:0 0 4px">🔒 Área restrita</h3>
+      <p style="margin:0 0 16px;font-size:13px;color:#5C6B7A">Entre com o login do seu painel.</p>
+      <input id="gEmail" type="email" placeholder="e-mail" autocomplete="username" style="width:100%;padding:12px;border:1px solid #E2E8F1;border-radius:10px;margin-bottom:10px;font-size:16px">
+      <input id="gPwd" type="password" placeholder="senha" autocomplete="current-password" onkeydown="if(event.key==='Enter')doGate()" style="width:100%;padding:12px;border:1px solid #E2E8F1;border-radius:10px;margin-bottom:12px;font-size:16px">
+      <button onclick="doGate()" style="width:100%;background:#08518b;color:#fff;border:0;border-radius:11px;padding:13px;font-weight:800;cursor:pointer">Entrar</button>
+      <p id="gErr" style="color:#e5484d;font-size:13px;margin:10px 0 0;min-height:16px"></p>
+    </div>
+  </div>
+
 <script>
 const cv=document.getElementById('c'),x=cv.getContext('2d'),W=1080,H=1920;
 const BRAND='#08518b',DEEP='#052f52';
@@ -167,15 +178,21 @@ function drawPromo(t,p){
   if(aT<FMS){x.fillStyle='rgba(4,20,34,'+(1-aT/FMS).toFixed(3)+')';x.fillRect(0,0,W,H);}
   else if(rem<FMS){x.fillStyle='rgba(4,20,34,'+(1-rem/FMS).toFixed(3)+')';x.fillRect(0,0,W,H);}
 }
+function fmtWa(raw){let d=(raw||'').replace(/\D/g,'');if(d.startsWith('55'))d=d.slice(2);
+  if(d.length>=10){const ddd=d.slice(0,2),r=d.slice(2),m=r.length>8?5:4;return '('+ddd+') '+r.slice(0,m)+'-'+r.slice(m);}
+  return d;}
 function drawOutro(t){
   bgBrand();
-  const e=easeOut(Math.min(1,t*1.5));x.globalAlpha=e;x.textAlign='center';
-  if(logoImg){const sz=420,lw=logoImg.width*(sz/logoImg.height);x.drawImage(logoImg,(W-lw)/2,H/2-520,lw,sz);}
-  F('800 92px');x.fillStyle='#fff';x.fillText('Garanta a sua! 🌎',W/2,H/2-40);
-  F('600 52px');x.fillStyle='rgba(255,255,255,.9)';x.fillText('Reserve agora pelo WhatsApp',W/2,H/2+60);
-  const wa=(settings.wa||'').replace(/\D/g,'');
-  if(wa){F('800 60px');x.fillStyle='#5BE39A';x.fillText('📲 '+settings.wa,W/2,H/2+200);}
-  F('700 46px');x.fillStyle='rgba(255,255,255,.8)';x.fillText('jornada360viagens.com.br',W/2,H/2+320);
+  const e=easeOut(Math.min(1,t*1.6));x.globalAlpha=e;x.textAlign='center';
+  if(logoImg){const sz=360,lw=logoImg.width*(sz/logoImg.height);x.drawImage(logoImg,(W-lw)/2,470,lw,sz);}
+  else{F('800 110px');x.fillStyle='#fff';x.fillText(settings.name||'JORNADA360',W/2,720);}
+  F('800 98px');x.fillStyle='#fff';x.fillText('Garanta a sua! 🌎',W/2,1085);
+  F('600 54px');x.fillStyle='rgba(255,255,255,.9)';x.fillText('Reserve agora pelo WhatsApp',W/2,1195);
+  const num=fmtWa(settings.wa);
+  if(num){F('800 66px');const tw=x.measureText(num).width,pw=tw+130,px=(W-pw)/2,py=1275,ph=120;
+    x.fillStyle='#25D366';rr(px,py,pw,ph,ph/2);x.fill();
+    x.fillStyle='#07350f';x.textAlign='center';x.textBaseline='middle';x.fillText(num,W/2,py+ph/2+3);x.textBaseline='alphabetic';}
+  F('700 48px');x.fillStyle='rgba(255,255,255,.85)';x.textAlign='center';x.fillText('jornada360viagens.com.br',W/2,1520);
   x.globalAlpha=1;
   if(t<FADE){x.fillStyle='rgba(4,20,34,'+(1-t/FADE).toFixed(3)+')';x.fillRect(0,0,W,H);}
 }
@@ -247,7 +264,17 @@ function record(){
   }
   raf=requestAnimationFrame(recLoop);
 }
-boot();
+/* ---------- proteção por login (mesmo do painel) ---------- */
+async function doGate(){
+  const email=document.getElementById('gEmail').value.trim(),password=document.getElementById('gPwd').value;
+  if(!email||!password){document.getElementById('gErr').textContent='Preencha e-mail e senha';return;}
+  const{error}=await sb.auth.signInWithPassword({email,password});
+  if(error){document.getElementById('gErr').textContent='E-mail ou senha inválidos';return;}
+  document.getElementById('gate').remove();boot();
+}
+(async()=>{try{const{data}=await sb.auth.getSession();
+  if(data&&data.session){document.getElementById('gate').remove();boot();return;}}catch(e){}
+  setTimeout(()=>document.getElementById('gEmail').focus(),100);})();
 </script>
 </body>
 </html>
