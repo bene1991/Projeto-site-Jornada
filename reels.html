@@ -205,13 +205,16 @@ function record(){
     const file=new File([blob],fname,{type:blob.type});
     const url=URL.createObjectURL(blob);
     const box=document.getElementById('status');box.innerHTML='Pronto! ';
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
+    const canShare=navigator.canShare&&navigator.canShare({files:[file]});
+    if(canShare){
       const b=document.createElement('button');b.className='primary';b.style.padding='11px 16px';b.style.fontSize='14px';
       b.textContent='📲 Salvar / Compartilhar';
       b.onclick=()=>navigator.share({files:[file],title:'Promoções Jornada360'}).catch(()=>{});
       box.appendChild(b);
     }
-    const a=document.createElement('a');a.href=url;a.download=fname;a.className='dl';a.style.marginLeft='10px';a.textContent='⬇️ Baixar vídeo';
+    const a=document.createElement('a');a.href=url;a.className='dl';a.style.marginLeft='10px';
+    if(canShare){a.target='_blank';a.textContent='▶️ Abrir vídeo';}   // celular: abre pra segurar e salvar
+    else{a.download=fname;a.textContent='⬇️ Baixar vídeo';}            // PC: baixa direto
     box.appendChild(a);
     rb.textContent='⏺ Gravar vídeo';rb.disabled=false;
   };
