@@ -154,7 +154,11 @@
   .a-intro p{margin:0;color:var(--muted)}
   .section{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
     padding:22px;margin-bottom:20px}
-  .section > h2{margin:0 0 4px;font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px}
+  .section > h2{margin:0 0 4px;font-size:17px;font-weight:800;display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none}
+  .section > h2 .chev{margin-left:auto;font-size:15px;color:var(--muted);transition:transform .2s}
+  .section.collapsed > h2 .chev{transform:rotate(-90deg)}
+  .section.collapsed{padding-bottom:16px}
+  .section.collapsed > *:not(h2){display:none !important}
   .section > .desc{margin:0 0 18px;color:var(--muted);font-size:13.5px}
   .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
   .field label{font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
@@ -358,7 +362,9 @@
   </div></div>
 
   <div class="a-wrap">
-    <div class="a-intro"><h1>Configurar o site</h1><p>Tudo o que você mudar aqui aparece no site na hora.</p></div>
+    <div class="a-intro"><h1>Configurar o site</h1><p>Tudo o que você mudar aqui aparece no site na hora.</p>
+      <button class="ghost-btn" id="collapseBtn" onclick="toggleAllSections()" style="margin-top:10px">▾ Minimizar tudo</button>
+    </div>
 
     <!-- MONITORAMENTO DE VISITAS -->
     <div class="section">
@@ -744,7 +750,20 @@ async function tryLogin(){
   closeGate();showAdmin();
 }
 function showAdmin(){document.getElementById('site').classList.add('hide');document.getElementById('admin').classList.remove('hide');
-  loadAdminFields();renderPromoList();loadStats();window.scrollTo(0,0);}
+  loadAdminFields();renderPromoList();loadStats();setupCollapse();window.scrollTo(0,0);}
+function setupCollapse(){
+  document.querySelectorAll('#admin .section > h2').forEach(h=>{
+    if(h.querySelector('.chev'))return;
+    const c=document.createElement('span');c.className='chev';c.textContent='▾';h.appendChild(c);
+    h.addEventListener('click',e=>{if(e.target.closest('button'))return;h.parentElement.classList.toggle('collapsed');});
+  });
+}
+function toggleAllSections(){
+  const secs=[...document.querySelectorAll('#admin .section')];
+  const anyOpen=secs.some(s=>!s.classList.contains('collapsed'));
+  secs.forEach(s=>s.classList.toggle('collapsed',anyOpen));
+  document.getElementById('collapseBtn').textContent=anyOpen?'▸ Expandir tudo':'▾ Minimizar tudo';
+}
 function showSite(){document.getElementById('admin').classList.add('hide');document.getElementById('site').classList.remove('hide');
   applySettings();renderSite();drawDeco();window.scrollTo(0,0);}
 async function logout(){try{await sb.auth.signOut();}catch(e){}showSite();}
@@ -1034,7 +1053,7 @@ function drawPrice(x,p,BRAND){
   const colW=Math.max(rsW,xW),gap=14,contentW=colW+gap+bigW+centsW+6;
   F('700 30px');const labelW=x.measureText('Valor por pessoa').width;
   const hasAv=!!(p.avista&&(''+p.avista).trim());
-  const avText='ou à vista R$ '+p.avista;
+  const avText='à vista R$ '+p.avista;
   F('800 32px');const avW=hasAv?x.measureText(avText).width:0;
   const pad=30,base=104,labelY=base+44,avY=labelY+50,boxH=hasAv?avY+30:170;
   const bw=Math.max(contentW,labelW,avW)+pad*2;
