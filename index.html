@@ -468,7 +468,10 @@
         <div class="field"><label>Inclui</label><input id="fMeal" value="Café da Manhã"></div>
         <div class="field"><label>Parcelas</label><input id="fx" value="10" inputmode="numeric"></div>
       </div>
-      <div class="field"><label>Valor por pessoa (R$)</label><input id="fPrice" placeholder="165,35" inputmode="decimal"></div>
+      <div class="row2">
+        <div class="field"><label>Valor por pessoa (R$) — parcelado</label><input id="fPrice" placeholder="165,35" inputmode="decimal"></div>
+        <div class="field"><label>Valor à vista (R$) — opcional</label><input id="fAvista" placeholder="3.250,00" inputmode="decimal"></div>
+      </div>
 
       <div class="field" id="fieldUpload"><label>Arte pronta (quadrada)</label>
         <div class="drop" id="dropArt" onclick="pick('fileArt')"><span>📤 Toque para enviar a arte<br><small>a imagem quadrada que você já faz no Canva</small></span></div>
@@ -868,7 +871,7 @@ function savePromo(){
   const dest=val('fDest');if(!dest){toast('Informe o destino');return;}
   const chosen = mode==='upload' ? artData : photoData;
   const obj={dest,cat:val('fCat')||'Novas',date:val('fDate'),origin:val('fOrigin'),
-    destino:val('fDestino'),airline:val('fAirline'),nights:val('fNights'),
+    destino:val('fDestino'),airline:val('fAirline'),nights:val('fNights'),avista:val('fAvista'),
     hotel:val('fHotel'),meal:val('fMeal'),x:val('fx')||'10',price:val('fPrice')||'0,00'};
   obj.mode=mode;
   const finalImg = chosen || (destImages[dest.toLowerCase()]||null);
@@ -896,6 +899,7 @@ function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=
   document.getElementById('fDestino').value=p.destino||'';document.getElementById('fAirline').value=p.airline||'Latam';document.getElementById('fNights').value=p.nights||'';
   document.getElementById('fHotel').value=p.hotel||'';document.getElementById('fMeal').value=p.meal||'';
   document.getElementById('fx').value=p.x||'10';document.getElementById('fPrice').value=p.price||'';
+  document.getElementById('fAvista').value=p.avista||'';
   document.getElementById('btnSavePromo').textContent='Salvar alterações';
   document.getElementById('btnCancelEdit').classList.remove('hide');
   document.getElementById('fDest').scrollIntoView({behavior:'smooth',block:'center'});
@@ -904,7 +908,7 @@ async function delPromo(id){promos=promos.filter(p=>p.id!==id);
   try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
   persist();renderPromoList();toast('Promoção removida');}
 function resetPromoForm(){editingId=null;artData=null;photoData=null;
-  ['fDest','fCat','fDate','fHotel','fPrice','fDestino','fNights'].forEach(id=>document.getElementById(id).value='');
+  ['fDest','fCat','fDate','fHotel','fPrice','fDestino','fNights','fAvista'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fMeal').value='Café da Manhã';document.getElementById('fx').value='10';
   document.getElementById('fOrigin').value='S. J. do Rio Preto';document.getElementById('fAirline').value='Latam';
   ['dropArt','dropPhoto'].forEach(id=>{const d=document.getElementById(id);d.classList.remove('has');});
@@ -1029,15 +1033,21 @@ function drawPrice(x,p,BRAND){
   F('800 28px');const xW=x.measureText((p.x||'10')+'x').width;
   const colW=Math.max(rsW,xW),gap=14,contentW=colW+gap+bigW+centsW+6;
   F('700 30px');const labelW=x.measureText('Valor por pessoa').width;
-  const pad=30,boxH=170,bw=Math.max(contentW,labelW)+pad*2;
+  const hasAv=!!(p.avista&&(''+p.avista).trim());
+  const avText='ou à vista R$ '+p.avista;
+  F('800 32px');const avW=hasAv?x.measureText(avText).width:0;
+  const pad=30,base=104,labelY=base+44,avY=labelY+50,boxH=hasAv?avY+30:170;
+  const bw=Math.max(contentW,labelW,avW)+pad*2;
   x.fillStyle=BRAND;rr(x,0,0,bw,boxH,26);x.fill();
-  const cx=(bw-contentW)/2,base=104;
+  const cx=(bw-contentW)/2;
   x.fillStyle='#ffffff';x.textBaseline='alphabetic';x.textAlign='left';
   F('800 34px');x.fillText('R$',cx,base-40);
   F('800 28px');x.fillText((p.x||'10')+'x',cx,base-4);
   F('800 96px');x.fillText(reais,cx+colW+gap,base);
   F('800 40px');x.fillText(cents,cx+colW+gap+bigW+6,base-56);
-  F('700 30px');x.textAlign='center';x.fillText('Valor por pessoa',bw/2,boxH-28);x.textAlign='left';
+  F('700 30px');x.textAlign='center';x.fillText('Valor por pessoa',bw/2,hasAv?labelY:boxH-28);
+  if(hasAv){F('800 32px');x.fillStyle='#bfe3ff';x.fillText(avText,bw/2,avY);}
+  x.textAlign='left';
   return{w:bw,h:boxH};
 }
 // desenha a arte a partir do layout; devolve os retângulos de cada elemento
