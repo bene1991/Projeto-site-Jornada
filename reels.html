@@ -42,7 +42,7 @@
     <button class="ghost" onclick="location.reload()">↻ Recarregar</button>
   </div>
   <div class="status" id="status">Carregando promoções…</div>
-  <p class="tips">💡 Melhor jeito pro Instagram: deixe tocando e <b>grave a tela do celular</b> (sai em MP4). No PC, use “Gravar vídeo” (baixa .webm) e suba pelo Instagram web.</p>
+  <p class="tips">💡 No celular: toque em <b>Gravar vídeo</b> → depois em <b>📲 Salvar / Compartilhar</b> (vai direto pro Instagram/galeria, em MP4). No PC: <b>Gravar vídeo</b> → <b>⬇️ Baixar</b>.</p>
 
 <script>
 const cv=document.getElementById('c'),x=cv.getContext('2d'),W=1080,H=1920;
@@ -178,24 +178,50 @@ function loop(ts){if(!start)start=ts;const el=ts-start;drawFrame(el);
   if(el<totalDur())raf=requestAnimationFrame(loop);else{cancelAnimationFrame(raf);raf=null;}}
 function play(){if(!promos.length)return;cancelAnimationFrame(raf);start=0;raf=requestAnimationFrame(loop);}
 
-/* ---------- gravar (.webm) ---------- */
+/* ---------- gravar (MP4 no iPhone / webm no resto) ---------- */
 let rec=null;
+function pickMime(){
+  const c=['video/mp4;codecs=avc1.42E01E','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+  for(const m of c){try{if(window.MediaRecorder&&MediaRecorder.isTypeSupported(m))return m;}catch(e){}}
+  return '';
+}
 function record(){
   if(!promos.length)return;
-  if(!cv.captureStream){status('Seu navegador não grava vídeo — use a gravação de tela.');return;}
-  const stream=cv.captureStream(30);
-  let mime='video/webm;codecs=vp9';if(!MediaRecorder.isTypeSupported(mime))mime='video/webm';
-  rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:8000000});
-  const chunks=[];rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
-  rec.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);
-    status('');const a=document.createElement('a');a.href=url;a.download='jornada360-promocoes.webm';a.className='dl';a.textContent='⬇️ Baixar vídeo (.webm)';
-    document.getElementById('status').innerHTML='';document.getElementById('status').appendChild(a);};
-  document.getElementById('recBtn').textContent='● Gravando…';
+  const rb=document.getElementById('recBtn');
+  if(!cv.captureStream||!window.MediaRecorder){status('Este navegador não grava vídeo. Use o Chrome ou o Safari atualizado.');return;}
+  const mime=pickMime();
+  if(!mime){status('Formato de vídeo não suportado neste aparelho.');return;}
+  let stream;try{stream=cv.captureStream(30);}catch(e){status('Não consegui iniciar a gravação.');return;}
+  try{rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:9000000});}
+  catch(e){try{rec=new MediaRecorder(stream);}catch(e2){status('Erro ao iniciar a gravação neste aparelho.');return;}}
+  const chunks=[];rec.ondataavailable=e=>e.data&&e.data.size&&chunks.push(e.data);
+  rec.onstop=()=>{
+    const ext=(rec.mimeType||mime).includes('mp4')?'mp4':'webm';
+    const blob=new Blob(chunks,{type:(rec.mimeType||mime).split(';')[0]});
+    const fname='jornada360-promocoes.'+ext;
+    const file=new File([blob],fname,{type:blob.type});
+    const url=URL.createObjectURL(blob);
+    const box=document.getElementById('status');box.innerHTML='Pronto! ';
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      const b=document.createElement('button');b.className='primary';b.style.padding='11px 16px';b.style.fontSize='14px';
+      b.textContent='📲 Salvar / Compartilhar';
+      b.onclick=()=>navigator.share({files:[file],title:'Promoções Jornada360'}).catch(()=>{});
+      box.appendChild(b);
+    }
+    const a=document.createElement('a');a.href=url;a.download=fname;a.className='dl';a.style.marginLeft='10px';a.textContent='⬇️ Baixar vídeo';
+    box.appendChild(a);
+    rb.textContent='⏺ Gravar vídeo';rb.disabled=false;
+  };
+  rb.textContent='● Gravando…';rb.disabled=true;
   start=0;cancelAnimationFrame(raf);
-  const t0=performance.now();
-  function recLoop(ts){const el=ts-t0;drawFrame(el);if(el<totalDur())raf=requestAnimationFrame(recLoop);
-    else{rec.stop();document.getElementById('recBtn').textContent='⏺ Gravar vídeo';}}
-  rec.start();raf=requestAnimationFrame(recLoop);
+  const t0=performance.now(),total=totalDur();
+  try{rec.start()}catch(e){status('Erro ao iniciar: '+e.message);rb.textContent='⏺ Gravar vídeo';rb.disabled=false;return;}
+  function recLoop(ts){const el=ts-t0;drawFrame(el);
+    status('Gravando… '+Math.min(Math.ceil(total/1000),Math.ceil(el/1000))+'s / '+Math.ceil(total/1000)+'s');
+    if(el<total)raf=requestAnimationFrame(recLoop);
+    else{try{rec.stop()}catch(e){rb.textContent='⏺ Gravar vídeo';rb.disabled=false;}}
+  }
+  raf=requestAnimationFrame(recLoop);
 }
 boot();
 </script>
