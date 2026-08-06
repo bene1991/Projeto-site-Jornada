@@ -97,11 +97,11 @@ function drawIntro(t){
   const e=easeOut(Math.min(1,t*1.6));
   // logo
   if(logoImg){const sz=520*e,lw=logoImg.width*(sz/logoImg.height);
-    x.globalAlpha=e;x.drawImage(logoImg,(W-lw)/2,H/2-430,lw,sz);x.globalAlpha=1;}
-  else{x.globalAlpha=e;F('800 130px');x.fillStyle='#fff';x.textAlign='center';x.fillText(settings.name||'JORNADA360',W/2,H/2-140);x.globalAlpha=1;}
+    x.globalAlpha=e;x.drawImage(logoImg,(W-lw)/2,H/2-560,lw,sz);x.globalAlpha=1;}
+  else{x.globalAlpha=e;F('800 130px');x.fillStyle='#fff';x.textAlign='center';x.fillText(settings.name||'JORNADA360',W/2,H/2-260);x.globalAlpha=1;}
   const e2=easeOut(Math.max(0,Math.min(1,(t-.35)*1.8)));
   x.globalAlpha=e2;x.textAlign='center';
-  F('800 84px');x.fillStyle='#fff';x.fillText('PROMOÇÕES',W/2,H/2+140);x.fillText('ATIVAS ✈️',W/2,H/2+240);
+  F('800 90px');x.fillStyle='#fff';x.fillText('PROMOÇÕES',W/2,H/2+180);x.fillText('ATIVAS ✈️',W/2,H/2+300);
   x.globalAlpha=1;
 }
 function drawPromo(t,p){
