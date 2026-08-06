@@ -1045,8 +1045,13 @@ function drawPrice(x,p,BRAND){
   F('800 28px');x.fillText((p.x||'10')+'x',cx,base-4);
   F('800 96px');x.fillText(reais,cx+colW+gap,base);
   F('800 40px');x.fillText(cents,cx+colW+gap+bigW+6,base-56);
-  F('700 30px');x.textAlign='center';x.fillText('Valor por pessoa',bw/2,hasAv?labelY:boxH-28);
-  if(hasAv){F('800 32px');x.fillStyle='#bfe3ff';x.fillText(avText,bw/2,avY);}
+  x.textAlign='center';
+  if(hasAv){
+    F('800 32px');x.fillStyle='#ffffff';x.fillText(avText,bw/2,labelY);            // à vista (branco), logo abaixo do número
+    F('700 30px');x.fillStyle='#ffffff';x.fillText('Valor por pessoa',bw/2,avY);   // valor por pessoa embaixo
+  }else{
+    F('700 30px');x.fillStyle='#ffffff';x.fillText('Valor por pessoa',bw/2,boxH-28);
+  }
   x.textAlign='left';
   return{w:bw,h:boxH};
 }
