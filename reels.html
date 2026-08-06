@@ -165,12 +165,12 @@ function drawPromo(t,p){
   x.textAlign='left';x.fillStyle='#fff';
   F('800 120px');x.fillText(p.dest||'',80,yDest);
   F('400 46px');x.textBaseline='alphabetic';
-  let yy=H-560+dy;
+  let yy=H-566+dy;
   const lines=[['cal',p.date],['plane',(p.origin||'')+' → '+(p.destino||p.dest||'')],['bed',(p.nights?p.nights+' noites · ':'')+(p.hotel||'')],['meal',p.meal]].filter(l=>l[1]);
   lines.forEach(l=>{
     drawIcon(l[0],80,yy-40,46,'#ffffff');
     x.fillStyle='rgba(255,255,255,.96)';x.textAlign='left';F('400 46px');x.fillText(l[1],150,yy);
-    yy+=72;});
+    yy+=64;});
   x.globalAlpha=1;
   // preço (pop)
   const ep=easeBack(clamp((aT-450)/650));
@@ -178,7 +178,7 @@ function drawPromo(t,p){
   const hasAv=!!(p.avista&&(''+p.avista).trim()),avText='à vista R$ '+p.avista;
   F('800 120px');const bw=x.measureText(reais).width;
   F('800 38px');const avW=hasAv?x.measureText(avText).width:0;
-  const boxH=hasAv?280:190,bx=70,by=H-90-boxH,boxW=Math.max(bw+360,avW+80);
+  const boxH=hasAv?248:190,bx=70,by=H-90-boxH,boxW=Math.max(bw+360,avW+80);
   x.save();x.translate(bx+boxW/2,by+boxH/2);x.scale(ep,ep);x.translate(-(bx+boxW/2),-(by+boxH/2));
   x.fillStyle=BRAND;rr(bx,by,boxW,boxH,28);x.fill();
   x.fillStyle='#fff';x.textAlign='left';
@@ -186,8 +186,8 @@ function drawPromo(t,p){
   F('800 34px');x.fillText((p.x||'10')+'x',bx+40,by+130);
   F('800 120px');x.fillText(reais,bx+150,by+130);
   F('800 52px');x.fillText(cents,bx+150+bw+8,by+70);
-  if(hasAv){F('800 38px');x.fillStyle='#fff';x.fillText(avText,bx+40,by+188);
-    F('700 34px');x.fillText('Valor por pessoa',bx+40,by+240);}
+  if(hasAv){F('800 38px');x.fillStyle='#fff';x.fillText(avText,bx+40,by+186);
+    F('700 34px');x.fillText('Valor por pessoa',bx+40,by+228);}
   else{F('700 34px');x.fillText('Valor por pessoa',bx+40,by+178);}
   x.restore();
   // transição suave (fade de 450ms na entrada e saída), independente da duração
