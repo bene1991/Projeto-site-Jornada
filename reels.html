@@ -34,6 +34,11 @@
     border:1px solid rgba(255,255,255,.15);padding:10px 16px;border-radius:12px}
   .timer input{width:150px}
   .timer b{color:#7ec8ff;min-width:14px;text-align:center}
+  .picker{width:min(92vw,340px);display:flex;flex-direction:column;gap:7px;max-height:170px;overflow:auto;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:12px}
+  .picker .pick-h{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;opacity:.7;margin-bottom:2px}
+  .picker label{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:600;cursor:pointer}
+  .picker input{width:19px;height:19px;flex:none}
 </style>
 </head>
 <body>
@@ -42,6 +47,7 @@
   <div class="stage"><canvas id="c" width="1080" height="1920"></canvas></div>
   <label class="timer">⏱️ Tempo por promoção: <b id="secVal">7</b>s
     <input type="range" id="secRange" min="3" max="12" step="1" value="7" oninput="setSec(this.value)"></label>
+  <div class="picker" id="picker"></div>
   <div class="controls">
     <button class="primary" onclick="play()">▶️ Reproduzir</button>
     <button class="rec" onclick="record()" id="recBtn">⏺ Gravar vídeo</button>
@@ -82,14 +88,26 @@ async function boot(){
     const MESES={janeiro:1,fevereiro:2,'março':3,marco:3,abril:4,maio:5,junho:6,julho:7,agosto:8,setembro:9,outubro:10,novembro:11,dezembro:12};
     const dateKey=t=>{t=(t||'').toLowerCase();let m=t.match(/(\d{1,2})\s*\/\s*(\d{1,2})/);if(m)return (+m[2])*100+(+m[1]);
       for(const k in MESES){if(t.includes(k)){const d=t.match(/(\d{1,2})/);return MESES[k]*100+(d?+d[1]:0);}}return 999999;};
-    promos=(pr.data||[]).map(r=>r.data).filter(p=>p.active!==false)
-      .sort((a,b)=>dateKey(a.date)-dateKey(b.date)).slice(0,5); // ativas, por data de embarque
+    allPromos=(pr.data||[]).map((r,i)=>Object.assign({__i:i},r.data)).filter(p=>p.active!==false)
+      .sort((a,b)=>dateKey(a.date)-dateKey(b.date)); // todas ativas, por data de embarque
     if(settings.logo)logoImg=await loadImg(settings.logo);
-    for(const p of promos){if(p.img)imgs[p.img]=await loadImg(p.img);}
-    if(!promos.length){status('Nenhuma promoção cadastrada.');return;}
-    status(`${promos.length} promoção(ões) · duração ~${Math.round(totalDur()/1000)}s`);
-    drawFrame(0); // primeiro quadro parado
+    for(const p of allPromos){if(p.img)imgs[p.img]=await loadImg(p.img);}
+    if(!allPromos.length){status('Nenhuma promoção cadastrada.');return;}
+    buildPicker();applySelection();
   }catch(e){status('Erro ao carregar. Veja se há promoções.');console.error(e);}
+}
+let allPromos=[],selected=new Set();
+function buildPicker(){
+  allPromos.forEach(p=>selected.add(p.__i));   // todas marcadas por padrão
+  document.getElementById('picker').innerHTML='<div class="pick-h">Promoções no vídeo:</div>'+
+    allPromos.map(p=>`<label><input type="checkbox" checked onchange="toggleSel(${p.__i},this.checked)"> ${(''+(p.dest||'')).replace(/</g,'')} <span style="opacity:.6">· ${(''+(p.date||'')).replace(/</g,'')}</span></label>`).join('');
+}
+function toggleSel(i,on){on?selected.add(i):selected.delete(i);applySelection();}
+function applySelection(){
+  promos=allPromos.filter(p=>selected.has(p.__i));
+  if(!promos.length){status('Selecione ao menos 1 promoção.');x.clearRect(0,0,W,H);bgBrand();return;}
+  status(`${promos.length} promoção(ões) · vídeo ~${Math.round(totalDur()/1000)}s`);
+  drawFrame(0);
 }
 
 /* ---------- timeline ---------- */

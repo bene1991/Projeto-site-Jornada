@@ -948,6 +948,10 @@ function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=
   document.getElementById('btnCancelEdit').classList.remove('hide');
   document.getElementById('fDest').scrollIntoView({behavior:'smooth',block:'center'});
 }
+function duplicatePromo(id){const p=promos.find(x=>x.id===id);if(!p)return;
+  const copy=Object.assign({},JSON.parse(JSON.stringify(p)),{id:Date.now(),active:true});
+  const i=promos.findIndex(x=>x.id===id);promos.splice(i+1,0,copy);
+  persist();renderPromoList();toast('Promoção duplicada — edite as datas/valores ✓');}
 function toggleActive(id){const p=promos.find(x=>x.id===id);if(!p)return;
   p.active=(p.active===false);persist();renderPromoList();
   toast(p.active===false?'Promoção pausada (fora do site)':'Promoção ativada ✓');}
@@ -974,6 +978,7 @@ function renderPromoList(){
       <button class="mini-btn" onclick="toggleActive(${p.id})" style="${off?'border-color:#1E9E6A;color:#1E9E6A':'border-color:#e5a23c;color:#e5a23c'}">${off?'▶ Ativar':'⏸ Pausar'}</button>
       <button class="mini-btn" onclick="openEditor(${p.id})" style="border-color:var(--brand);color:var(--brand)">🎨 Arte</button>
       <button class="mini-btn" onclick="copyText(${p.id})">📋 Texto</button>
+      <button class="mini-btn" onclick="duplicatePromo(${p.id})">⧉ Duplicar</button>
       <button class="mini-btn" onclick="editPromo(${p.id})">Editar dados</button>
       <button class="mini-btn del" onclick="delPromo(${p.id})">Remover</button>
     </div></div>`;}).join('');
