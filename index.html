@@ -403,6 +403,11 @@
         <input type="file" id="fileLogo" accept="image/*" hidden onchange="onLogo(event)">
         <button class="ghost-btn" style="align-self:flex-start;margin-top:8px" onclick="resetLogo()">↺ Usar logo padrão</button>
       </div>
+      <div class="field"><label>Logo das artes</label>
+        <div class="drop logo-drop" id="dropLogoArt" onclick="pick('fileLogoArt')"><span>🖼️ Logo usada nas artes geradas<br><small>vazia = usa a logo do site</small></span></div>
+        <input type="file" id="fileLogoArt" accept="image/*" hidden onchange="onLogoArt(event)">
+        <button class="ghost-btn" style="align-self:flex-start;margin-top:8px" onclick="resetLogoArt()">↺ Usar a logo do site</button>
+      </div>
       <div class="field"><label>Tamanho da logo — <span id="logoSizeVal">50</span>px</label>
         <input type="range" id="sLogoSize" min="28" max="130" value="50" oninput="onLogoSize(this.value)">
       </div>
@@ -605,6 +610,7 @@ const defaults={
   footHours:'Seg a Sex, 9h às 18h · Sáb 9h às 13h',
   footSteps:'1. Escolha a promoção\n2. Fale com a gente no WhatsApp\n3. Reserve e parcele em até 10x',
   logoSize:50, logoBg:null,
+  artLogo:null, artLogoBg:null,
   bioBg:null, bioBadge:'Promoções ativas agora', bioLogoSize:74,
   bioBio:'Realizamos o sonho da sua viagem — pacotes com aéreo + hospedagem, saindo de Rio Preto. ✈️',
   bioLinks:[
@@ -831,6 +837,9 @@ function loadAdminFields(){
   const d=document.getElementById('dropLogo');
   if(settings.logo){d.classList.add('has');d.innerHTML=`<img src="${settings.logo}" alt="logo">`;}
   else{d.classList.remove('has');d.innerHTML='<span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span>';}
+  const da=document.getElementById('dropLogoArt');
+  if(settings.artLogo){da.classList.add('has');da.innerHTML=`<img src="${settings.artLogo}" alt="logo das artes">`;}
+  else{da.classList.remove('has');da.innerHTML='<span>🖼️ Logo usada nas artes geradas<br><small>vazia = usa a logo do site</small></span>';}
   // Links da bio
   document.getElementById('sBioBio').value=settings.bioBio||'';
   document.getElementById('sBioBadge').value=settings.bioBadge||'';
@@ -928,6 +937,17 @@ function onLogoSize(v){settings.logoSize=+v;document.getElementById('logoSizeVal
 function resetLogo(){settings.logo=null;const d=document.getElementById('dropLogo');
   d.classList.remove('has');d.innerHTML='<span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span>';
   toast('Logo padrão restaurada — salve para aplicar');}
+function applyArtLogoResult(r){settings.artLogo=r.url;settings.artLogoBg=r.bg;persist();}
+function onLogoArt(e){readImg(e,async raw=>{
+  const r=await cropLogo(raw);applyArtLogoResult(r);
+  const box=document.getElementById('dropLogoArt');
+  box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo das artes">`;
+  applySettings();toast('Logo das artes pronta ✓');
+});}
+function resetLogoArt(){settings.artLogo=null;settings.artLogoBg=null;persist();
+  const d=document.getElementById('dropLogoArt');
+  d.classList.remove('has');d.style.background='';d.innerHTML='<span>🖼️ Logo usada nas artes geradas<br><small>vazia = usa a logo do site</small></span>';
+  toast('Artes voltarão a usar a logo do site ✓');}
 
 /* ================= ADMIN: PROMOÇÕES ================= */
 function setMode(m){mode=m;
@@ -1152,8 +1172,8 @@ function drawArt(x,S,p,L,bgImg,logoImg){
   B.tag={x:tx,y:ty,w:pw,h:60};
   const ls=L.logo.scale||1,lx=L.logo.x*S,ly=L.logo.y*S;
   if(logoImg){const lh=118*ls,lw=logoImg.width*(lh/logoImg.height);
-    if(settings.logoBg){const pad=18*ls,bw=lw+pad*2,bh=lh+pad*2;
-      x.fillStyle=settings.logoBg;rr(x,lx,ly,bw,bh,22*ls);x.fill();x.drawImage(logoImg,lx+pad,ly+pad,lw,lh);
+    if(settings.artLogoBg){const pad=18*ls,bw=lw+pad*2,bh=lh+pad*2;
+      x.fillStyle=settings.artLogoBg;rr(x,lx,ly,bw,bh,22*ls);x.fill();x.drawImage(logoImg,lx+pad,ly+pad,lw,lh);
       B.logo={x:lx,y:ly,w:bw,h:bh};
     }else{x.drawImage(logoImg,lx,ly,lw,lh);B.logo={x:lx,y:ly,w:lw,h:lh};}
   }else{x.textAlign='left';x.font=`800 ${34*ls}px system-ui,sans-serif`;x.fillStyle='#fff';
@@ -1177,7 +1197,7 @@ function drawArt(x,S,p,L,bgImg,logoImg){
 async function buildArt(p){
   const S=1080,c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');
   const bg=p.img?await loadImg(p.img).catch(()=>null):null;
-  const lg=settings.logo?await loadImg(settings.logo).catch(()=>null):null;
+  const lg=(settings.artLogo||settings.logo)?await loadImg(settings.artLogo||settings.logo).catch(()=>null):null;
   drawArt(x,S,p,normLayout(p.layout),bg,lg);
   return c;
 }
@@ -1197,7 +1217,7 @@ async function openEditor(id){
   const p=promos.find(x=>x.id===id);if(!p)return;
   ed.id=id;ed.L=normLayout(p.layout);
   ed.bg=p.img?await loadImg(p.img).catch(()=>null):null;
-  ed.lg=settings.logo?await loadImg(settings.logo).catch(()=>null):null;
+  ed.lg=(settings.artLogo||settings.logo)?await loadImg(settings.artLogo||settings.logo).catch(()=>null):null;
   document.getElementById('edLogoSize').value=Math.round((ed.L.logo.scale||1)*100);
   document.getElementById('edPriceSize').value=Math.round((ed.L.price.scale||1)*100);
   document.getElementById('editor').classList.add('open');
@@ -1237,10 +1257,10 @@ async function applyLayoutToAll(){
   const ok=await persist();
   toast(ok?('Layout aplicado a todas as '+promos.length+' promoções ✓'):'Erro ao aplicar — verifique o login');
 }
-function edLogoChange(e){readImg(e,async raw=>{const r=await cropLogo(raw);applyLogoResult(r);
+function edLogoChange(e){readImg(e,async raw=>{const r=await cropLogo(raw);applyArtLogoResult(r);
   ed.lg=await loadImg(r.url).catch(()=>null);applySettings();renderEditor();
-  const box=document.getElementById('dropLogo');if(box){box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo">`;}
-  toast('Logo trocada ✓');});}
+  const box=document.getElementById('dropLogoArt');if(box){box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo das artes">`;}
+  toast('Logo das artes trocada ✓');});}
 function edPhotoChange(e){readImg(e,async d=>{const c=await compress(d,1200,.82,'image/jpeg');toast('Enviando...');
   const url=await uploadImage(c,'destino')||c;edP().img=url;ed.bg=await loadImg(url).catch(()=>null);
   saveDestImage(edP().dest,url);persist();renderEditor();toast('Foto trocada ✓');});}

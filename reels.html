@@ -90,7 +90,7 @@ async function boot(){
       for(const k in MESES){if(t.includes(k)){const d=t.match(/(\d{1,2})/);return MESES[k]*100+(d?+d[1]:0);}}return 999999;};
     allPromos=(pr.data||[]).map((r,i)=>Object.assign({__i:i},r.data)).filter(p=>p.active!==false)
       .sort((a,b)=>dateKey(a.date)-dateKey(b.date)); // todas ativas, por data de embarque
-    if(settings.logo)logoImg=await loadImg(settings.logo);
+    if(settings.artLogo||settings.logo)logoImg=await loadImg(settings.artLogo||settings.logo);
     for(const p of allPromos){if(p.img)imgs[p.img]=await loadImg(p.img);}
     if(!allPromos.length){status('Nenhuma promoção cadastrada.');return;}
     buildPicker();applySelection();
