@@ -894,19 +894,29 @@ async function saveBio(){settings.bioBio=val('sBioBio');settings.bioBadge=val('s
   settings.bioName=val('sBioName');settings.bioTag=val('sBioTag');
   settings.bioLogoSize=+document.getElementById('sBioLogoSize').value;
   const ok=await persist();toast(ok?'Links da bio salvos ✓':'Erro ao salvar — verifique o login');}
-function saveSettings(){
+async function saveSettings(){
   const m={sName:'name',sTag:'tag',sEyebrow:'eyebrow',sTitle:'title',sSub:'sub',
     sStat2:'stat2',sStat2l:'stat2l',sStat3:'stat3',sStat3l:'stat3l',sWa:'wa',sWaGroup:'waGroup',sFooter:'footer',
     sFootAbout:'footAbout',sFootHours:'footHours',sFootSteps:'footSteps'};
   for(const id in m)settings[m[id]]=val(id);
-  persist();applySettings();toast('Salvo! ✓');
+  applySettings();
+  const ok=await persist();toast(ok?'Salvo! ✓':'Erro ao salvar — verifique o login');
 }
-function applyLogoResult(r){settings.logo=r.url;settings.logoBg=r.bg;persist();}
+async function applyLogoResult(r){
+  settings.logo=r.url;settings.logoBg=r.bg;applySettings();   // prévia instantânea com o data URL
+  const url=await uploadImage(r.url,'logo','png');
+  if(!url){toast('Erro ao enviar a logo — tente de novo');return false;}
+  settings.logo=url;                                          // troca pro link definitivo do Storage
+  const ok=await persist();
+  if(!ok){toast('Logo enviada, mas não salvou — verifique o login e tente de novo');return false;}
+  return true;
+}
 function onLogo(e){readImg(e,async raw=>{
-  const r=await cropLogo(raw);applyLogoResult(r);
+  const r=await cropLogo(raw);
   const box=document.getElementById('dropLogo');
   box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo">`;
-  applySettings();toast('Logo pronta ✓');
+  const ok=await applyLogoResult(r);
+  if(ok)toast('Logo pronta ✓');
 });}
 // recorta as margens e detecta a cor de fundo da logo (pra usar no selo)
 function cropLogo(src){return new Promise(res=>{const i=new Image();i.onload=()=>{
@@ -933,21 +943,31 @@ function cropLogo(src){return new Promise(res=>{const i=new Image();i.onload=()=
   cc.getContext('2d').drawImage(cn,minx-m,miny-m,sw,sh,0,0,cw,ch);
   res({url:cc.toDataURL('image/png'),bg});
 };i.onerror=()=>res({url:src,bg:null});i.src=src;});}
-function onLogoSize(v){settings.logoSize=+v;document.getElementById('logoSizeVal').textContent=v;persist();}
-function resetLogo(){settings.logo=null;const d=document.getElementById('dropLogo');
+async function onLogoSize(v){settings.logoSize=+v;document.getElementById('logoSizeVal').textContent=v;applySettings();
+  const ok=await persist();if(!ok)toast('Erro ao salvar — verifique o login');}
+async function resetLogo(){settings.logo=null;settings.logoBg=null;const d=document.getElementById('dropLogo');
   d.classList.remove('has');d.innerHTML='<span>🖼️ Toque para enviar sua logo<br><small>PNG com fundo transparente fica melhor</small></span>';
-  toast('Logo padrão restaurada — salve para aplicar');}
-function applyArtLogoResult(r){settings.artLogo=r.url;settings.artLogoBg=r.bg;persist();}
+  applySettings();
+  const ok=await persist();toast(ok?'Logo padrão restaurada ✓':'Erro ao salvar — verifique o login');}
+async function applyArtLogoResult(r){
+  const url=await uploadImage(r.url,'artlogo','png');
+  if(!url){toast('Erro ao enviar a logo — tente de novo');return false;}
+  settings.artLogo=url;settings.artLogoBg=r.bg;
+  const ok=await persist();
+  if(!ok){toast('Logo enviada, mas não salvou — verifique o login e tente de novo');return false;}
+  return true;
+}
 function onLogoArt(e){readImg(e,async raw=>{
-  const r=await cropLogo(raw);applyArtLogoResult(r);
+  const r=await cropLogo(raw);
   const box=document.getElementById('dropLogoArt');
   box.classList.add('has');box.style.background=r.bg||'var(--brand)';box.innerHTML=`<img src="${r.url}" alt="logo das artes">`;
-  applySettings();toast('Logo das artes pronta ✓');
+  const ok=await applyArtLogoResult(r);
+  if(ok)toast('Logo das artes pronta ✓');
 });}
-function resetLogoArt(){settings.artLogo=null;settings.artLogoBg=null;persist();
+async function resetLogoArt(){settings.artLogo=null;settings.artLogoBg=null;
   const d=document.getElementById('dropLogoArt');
   d.classList.remove('has');d.style.background='';d.innerHTML='<span>🖼️ Logo usada nas artes geradas<br><small>vazia = usa a logo do site</small></span>';
-  toast('Artes voltarão a usar a logo do site ✓');}
+  const ok=await persist();toast(ok?'Artes voltarão a usar a logo do site ✓':'Erro ao salvar — verifique o login');}
 
 /* ================= ADMIN: PROMOÇÕES ================= */
 function setMode(m){mode=m;
