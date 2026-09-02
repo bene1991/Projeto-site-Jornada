@@ -623,6 +623,8 @@ const defaults={
 };
 const BIO_TEMPLATE=JSON.parse(JSON.stringify(defaults.bioLinks));
 let settings=Object.assign({},defaults);
+let dataLoaded=false;   // só true depois que loadData() confirma que buscou os dados reais do servidor
+let settingsSnapshot=null;   // cópia dos settings exatamente como vieram do servidor na última leitura
 const seed=[
   {id:1,dest:'Gramado',cat:'Serra',date:'16 à 21 de setembro',origin:'S. J. do Rio Preto',hotel:'Pousada Boschetti',meal:'Café da Manhã',x:'10',price:'165,35',img:null},
   {id:2,dest:'Rio de Janeiro',cat:'Praia',date:'05 à 10 de novembro',origin:'S. J. do Rio Preto',hotel:'Esuites Hotel Recreio Shopping',meal:'Café da Manhã',x:'10',price:'177,30',img:null}
@@ -631,18 +633,29 @@ let promos=[], destImages={};
 let activeCat='Todos', mode='upload', artData=null, photoData=null, editingId=null;
 
 /* ===== DADOS NA NUVEM (Supabase) ===== */
-async function loadData(){
+async function loadData(tentativas){
+  tentativas=tentativas||0;
   try{
     const [s,pr,ds]=await Promise.all([
       sb.from('settings').select('data').eq('id',1).maybeSingle(),
       sb.from('promos').select('id,data,pos').order('pos',{ascending:true}),
       sb.from('destinations').select('name,image_url')
     ]);
+    // se alguma das 3 consultas voltou com erro, não é "carregou vazio" — é falha de rede/servidor.
+    // Não podemos deixar `settings`/`promos` no valor padrão e seguir como se tivesse carregado,
+    // senão o próximo salvamento sobrescreve os dados reais no banco com os valores de fábrica.
+    if(s.error||pr.error||ds.error)throw(s.error||pr.error||ds.error);
     if(s.data&&s.data.data&&Object.keys(s.data.data).length)settings=Object.assign({},defaults,s.data.data);
     promos=(pr.data||[]).map(r=>Object.assign({},r.data,{id:Number(r.id)}));
     (ds.data||[]).forEach(d=>{destImages[d.name]=d.image_url;});
+    settingsSnapshot=JSON.parse(JSON.stringify(settings));
+    dataLoaded=true;
     if(!promos.length){promos=seed.map(p=>Object.assign({},p));await persist();}
-  }catch(e){toast('Sem conexão com o servidor');console.error(e);}
+  }catch(e){
+    console.error(e);
+    if(tentativas<2){await new Promise(r=>setTimeout(r,1500));return loadData(tentativas+1);}
+    toast('Sem conexão com o servidor — recarregue a página antes de editar, ou suas alterações podem não salvar');
+  }
 }
 async function loadStats(){
   const box=document.getElementById('statsBox');
@@ -679,9 +692,30 @@ async function loadStats(){
   }catch(e){box.innerHTML='<p style="color:var(--muted);font-size:14px">Não consegui carregar as visitas. Rode o SQL da tabela <b>visits</b> no Supabase.</p>';console.error(e);}
 }
 async function persist(){
+  if(!dataLoaded){
+    // nunca chegamos a carregar os dados reais do servidor (falha de rede no início) —
+    // salvar agora sobrescreveria tudo com os valores padrão. Bloqueia e avisa.
+    toast('Não carreguei seus dados ainda — recarregue a página antes de salvar');
+    return false;
+  }
   try{
-    await sb.from('settings').upsert({id:1,data:settings});
-    await sb.from('promos').upsert(promos.map((p,i)=>({id:p.id,data:p,pos:i})));
+    // busca o que está no servidor AGORA (pode ter mudado desde que esta aba carregou) e aplica
+    // por cima só os campos que realmente mudaram nesta sessão — nunca grava o resto por cima
+    // com uma cópia velha, mesmo que esta aba tenha ficado aberta muito tempo.
+    const{data:cur,error:eGet}=await sb.from('settings').select('data').eq('id',1).maybeSingle();
+    if(eGet)throw eGet;
+    const servidorAgora=Object.assign({},defaults,(cur&&cur.data)||{});
+    const merged=Object.assign({},servidorAgora);
+    for(const k in settings){
+      const antes=settingsSnapshot?JSON.stringify(settingsSnapshot[k]):undefined;
+      const agora=JSON.stringify(settings[k]);
+      if(agora!==antes)merged[k]=settings[k];   // só sobrescreve o que esta sessão de fato mudou
+    }
+    const{error:e1}=await sb.from('settings').upsert({id:1,data:merged});
+    if(e1)throw e1;
+    settings=merged;settingsSnapshot=JSON.parse(JSON.stringify(merged));
+    const{error:e2}=await sb.from('promos').upsert(promos.map((p,i)=>({id:p.id,data:p,pos:i})));
+    if(e2)throw e2;
     return true;
   }catch(e){toast('Erro ao salvar. Faça login como admin.');console.error(e);return false;}
 }
@@ -997,8 +1031,9 @@ function savePromo(){
     toast('Promoção publicada ✓');
   }
   if(mode==='form'&&photoData)saveDestImage(dest,photoData);   // guarda a foto pra reuso
-  persist();resetPromoForm();renderPromoList();
+  savePromoPersist();resetPromoForm();renderPromoList();
 }
+async function savePromoPersist(){const ok=await persist();if(!ok)toast('Não salvou no servidor — verifique o login e tente de novo');}
 // ao sair do campo destino, puxa foto já cadastrada daquele destino
 function onDestBlur(){
   if(editingId||photoData||artData)return;
@@ -1020,13 +1055,13 @@ function editPromo(id){const p=promos.find(x=>x.id===id);if(!p)return;editingId=
 function duplicatePromo(id){const p=promos.find(x=>x.id===id);if(!p)return;
   const copy=Object.assign({},JSON.parse(JSON.stringify(p)),{id:Date.now(),active:true});
   const i=promos.findIndex(x=>x.id===id);promos.splice(i+1,0,copy);
-  persist();renderPromoList();toast('Promoção duplicada — edite as datas/valores ✓');}
+  savePromoPersist();renderPromoList();toast('Promoção duplicada — edite as datas/valores ✓');}
 function toggleActive(id){const p=promos.find(x=>x.id===id);if(!p)return;
-  p.active=(p.active===false);persist();renderPromoList();
+  p.active=(p.active===false);savePromoPersist();renderPromoList();
   toast(p.active===false?'Promoção pausada (fora do site)':'Promoção ativada ✓');}
 async function delPromo(id){promos=promos.filter(p=>p.id!==id);
   try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
-  persist();renderPromoList();toast('Promoção removida');}
+  const ok=await persist();renderPromoList();toast(ok?'Promoção removida':'Não removeu no servidor — verifique o login e tente de novo');}
 function resetPromoForm(){editingId=null;artData=null;photoData=null;
   ['fDest','fCat','fDate','fHotel','fPrice','fDestino','fNights','fAvista'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fMeal').value='Café da Manhã';document.getElementById('fx').value='10';
@@ -1269,7 +1304,7 @@ function attachDrag(h){
 function edSet(el,v){ed.L[el].scale=v/100;renderEditor();}
 function edReset(){ed.L=normLayout(null);
   document.getElementById('edLogoSize').value=100;document.getElementById('edPriceSize').value=100;renderEditor();}
-function edSave(){const p=edP();if(p){p.layout=ed.L;persist();}}
+function edSave(){const p=edP();if(p){p.layout=ed.L;savePromoPersist();}}
 async function applyLayoutToAll(){
   edSave();const L=JSON.parse(JSON.stringify(ed.L));
   promos.forEach(p=>p.layout=JSON.parse(JSON.stringify(L)));
@@ -1283,7 +1318,8 @@ function edLogoChange(e){readImg(e,async raw=>{const r=await cropLogo(raw);apply
   toast('Logo das artes trocada ✓');});}
 function edPhotoChange(e){readImg(e,async d=>{const c=await compress(d,1200,.82,'image/jpeg');toast('Enviando...');
   const url=await uploadImage(c,'destino')||c;edP().img=url;ed.bg=await loadImg(url).catch(()=>null);
-  saveDestImage(edP().dest,url);persist();renderEditor();toast('Foto trocada ✓');});}
+  saveDestImage(edP().dest,url);const ok=await persist();renderEditor();
+  toast(ok?'Foto trocada ✓':'Foto trocada, mas não salvou no servidor — verifique o login');});}
 async function exportEditor(){edSave();const p=edP();toast('Gerando arte...');
   try{const c=await buildArt(p);showArt(c.toDataURL('image/png'),(p.dest||'promo').replace(/[^\w]+/g,'-').toLowerCase());}
   catch(e){console.error(e);toast('Não consegui gerar a arte');}}
