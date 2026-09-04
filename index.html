@@ -1059,6 +1059,9 @@ function duplicatePromo(id){const p=promos.find(x=>x.id===id);if(!p)return;
 function toggleActive(id){const p=promos.find(x=>x.id===id);if(!p)return;
   p.active=(p.active===false);savePromoPersist();renderPromoList();
   toast(p.active===false?'Promoção pausada (fora do site)':'Promoção ativada ✓');}
+function toggleStyleV2(id){const p=promos.find(x=>x.id===id);if(!p)return;
+  p.style=p.style==='v2'?null:'v2';savePromoPersist();renderPromoList();
+  toast(p.style==='v2'?'Estilo novo ligado nesta promoção (teste) ✓':'Voltou pro estilo padrão');}
 async function delPromo(id){promos=promos.filter(p=>p.id!==id);
   try{await sb.from('promos').delete().eq('id',id);}catch(e){console.error(e);}
   const ok=await persist();renderPromoList();toast(ok?'Promoção removida':'Não removeu no servidor — verifique o login e tente de novo');}
@@ -1081,6 +1084,7 @@ function renderPromoList(){
     <div class="acts">
       <button class="mini-btn" onclick="toggleActive(${p.id})" style="${off?'border-color:#1E9E6A;color:#1E9E6A':'border-color:#e5a23c;color:#e5a23c'}">${off?'▶ Ativar':'⏸ Pausar'}</button>
       <button class="mini-btn" onclick="openEditor(${p.id})" style="border-color:var(--brand);color:var(--brand)">🎨 Arte</button>
+      <button class="mini-btn" onclick="toggleStyleV2(${p.id})" style="border-color:var(--gold);color:var(--gold)">${p.style==='v2'?'✓ Estilo novo (teste)':'🧪 Testar estilo novo'}</button>
       <button class="mini-btn" onclick="copyText(${p.id})">📋 Texto</button>
       <button class="mini-btn" onclick="duplicatePromo(${p.id})">⧉ Duplicar</button>
       <button class="mini-btn" onclick="editPromo(${p.id})">Editar dados</button>
@@ -1165,15 +1169,24 @@ async function downloadArt(id){
 // layout padrão (posições normalizadas 0..1 no quadro 1080)
 const DEFAULT_LAYOUT={tag:{x:.067,y:.067},logo:{x:.63,y:.067,scale:1},info:{x:.067,y:.567},price:{x:.067,y:.742,scale:1}};
 function getBrand(){return getComputedStyle(document.documentElement).getPropertyValue('--brand').trim()||'#08518b';}
+function getGold(){return getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()||'#C9A24B';}
 // ícones de linha (branco), desenhados no canvas — sem emoji colorido
 const ICON_PATHS={
   cal:'M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z M3 10h18 M8 2v4 M16 2v4',
   plane:'M2 12l20-8-8 20-2-8-8-2z',
   bed:'M4 21V5h10v16 M14 21V10h6v11 M7 8h1.5 M7 12h1.5 M7 16h1.5 M11 8h1.5 M11 12h1.5 M11 16h1.5',
-  meal:'M4 20h16 M6 16a6 6 0 0112 0z M12 10V4'};
+  meal:'M4 20h16 M6 16a6 6 0 0112 0z M12 10V4',
+  star:'M12 2l3.09 6.26L22 9.27l-5.5 4.87 1.3 6.86L12 17.77l-5.89 3.23 1.3-6.86L2 9.27l6.91-1.01L12 2z',
+  bed2:'M2 4v16 M2 8h18a2 2 0 012 2v10 M2 17h20 M6 8V6a2 2 0 012-2h3',
+  meal2:'M18 8h1a4 4 0 010 8h-1 M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z'};
 function drawIcon(x,name,px,py,size,color){if(!ICON_PATHS[name])return;
   x.save();x.translate(px,py);x.scale(size/24,size/24);
   x.strokeStyle=color;x.lineWidth=2;x.lineJoin='round';x.lineCap='round';
+  x.stroke(new Path2D(ICON_PATHS[name]));x.restore();}
+// versão centrada (px,py = centro do ícone) — usada no estilo v2, dentro dos círculos
+function drawIconC(x,name,cx,cy,size,color,lw){if(!ICON_PATHS[name])return;
+  x.save();x.translate(cx-size/2,cy-size/2);x.scale(size/24,size/24);
+  x.strokeStyle=color;x.lineWidth=lw||2.2;x.lineJoin='round';x.lineCap='round';
   x.stroke(new Path2D(ICON_PATHS[name]));x.restore();}
 function normLayout(L){L=L||{};return{
   tag:Object.assign({},DEFAULT_LAYOUT.tag,L.tag),
@@ -1253,8 +1266,112 @@ async function buildArt(p){
   const S=1080,c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');
   const bg=p.img?await loadImg(p.img).catch(()=>null):null;
   const lg=(settings.artLogo||settings.logo)?await loadImg(settings.artLogo||settings.logo).catch(()=>null):null;
-  drawArt(x,S,p,normLayout(p.layout),bg,lg);
+  if(p.style==='v2')drawArtV2(x,S,p,bg,lg);
+  else drawArt(x,S,p,normLayout(p.layout),bg,lg);
   return c;
+}
+
+/* ===== ESTILO NOVO (v2) — em teste, só ativado por promoção ===== */
+function drawStar(x,cx,cy,outerR,innerR,color){
+  x.save();x.beginPath();
+  for(let i=0;i<10;i++){const r=i%2===0?outerR:innerR,a=Math.PI/5*i-Math.PI/2;
+    const px=cx+r*Math.cos(a),py=cy+r*Math.sin(a);i===0?x.moveTo(px,py):x.lineTo(px,py);}
+  x.closePath();x.fillStyle=color;x.fill();x.restore();
+}
+function drawFlame(x,cx,cy,size,color){
+  x.save();x.fillStyle=color;x.beginPath();
+  x.moveTo(cx,cy-size*.5);
+  x.bezierCurveTo(cx+size*.35,cy-size*.1,cx+size*.28,cy+size*.3,cx,cy+size*.5);
+  x.bezierCurveTo(cx-size*.28,cy+size*.3,cx-size*.3,cy-size*.02,cx-size*.02,cy-size*.22);
+  x.bezierCurveTo(cx-size*.02,cy-size*.02,cx+size*.05,cy-size*.05,cx,cy-size*.5);
+  x.closePath();x.fill();x.restore();
+}
+function drawBadgeOutline(x,tx,ty,text,iconName,color){
+  x.font='700 28px system-ui,sans-serif';const tw=x.measureText(text).width;
+  const iconSize=26,gap=14,padX=26,padY=16;
+  const w=padX*2+iconSize+gap+tw,h=iconSize+padY*2;
+  x.fillStyle='rgba(4,24,42,.35)';rr(x,tx,ty,w,h,h/2);x.fill();
+  x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=2;rr(x,tx,ty,w,h,h/2);x.stroke();
+  drawIconC(x,iconName,tx+padX+iconSize/2,ty+h/2,iconSize,color);
+  x.fillStyle=color;x.textAlign='left';x.textBaseline='middle';
+  x.fillText(text,tx+padX+iconSize+gap,ty+h/2+2);x.textBaseline='alphabetic';
+  return{w,h};
+}
+function drawPriceV2(x,p,boxY,boxX,GOLD,NAVY){
+  const parts=(p.price||'0,00').split(','),reais=parts[0],cents=','+(parts[1]||'00');
+  const F=f=>x.font=f+' system-ui,sans-serif';
+  F('800 84px');const bigW=x.measureText(reais).width;
+  F('800 34px');const centsW=x.measureText(cents).width;
+  F('700 26px');const xrsW=Math.max(x.measureText((p.x||'10')+'x').width,x.measureText('R$').width);
+  const pad=34,gap=16,contentW=xrsW+gap+bigW+centsW+10;
+  F('700 24px');const tagText='A PARTIR DE',tagW=x.measureText(tagText).width+40;
+  F('600 26px');const subW=x.measureText('por pessoa').width;
+  F('700 26px');const bottomText='CONDIÇÃO ESPECIAL',bottomW=x.measureText(bottomText).width+80;
+  const bw=Math.max(contentW+pad*2,tagW+pad*2,subW+pad*2,bottomW);
+  const tagH=48,tagPadTop=26,tagGapBottom=22,priceH=90,subH=44,dividerGap=18,bottomH=64;
+  const priceTop=tagPadTop+tagH+tagGapBottom,boxH=priceTop+priceH+subH+dividerGap+bottomH+10;
+  x.save();x.translate(boxX,boxY);
+  x.fillStyle=NAVY;rr(x,0,0,bw,boxH,26);x.fill();
+  x.fillStyle=GOLD;rr(x,pad,tagPadTop,tagW,tagH,tagH/2);x.fill();
+  x.fillStyle=NAVY;x.font='700 24px system-ui,sans-serif';x.textAlign='left';x.textBaseline='middle';
+  x.fillText(tagText,pad+20,tagPadTop+tagH/2+1);x.textBaseline='alphabetic';
+  const py=priceTop+priceH*.72;
+  x.fillStyle='#fff';x.textAlign='left';
+  F('700 26px');x.fillText((p.x||'10')+'x',pad,py-52);
+  F('700 26px');x.fillText('R$',pad,py-16);
+  F('800 84px');x.fillText(reais,pad+xrsW+gap,py);
+  F('800 34px');x.fillText(cents,pad+xrsW+gap+bigW+6,py-46);
+  x.textAlign='center';x.fillStyle='rgba(255,255,255,.85)';F('600 26px');
+  x.fillText('por pessoa',bw/2,priceTop+priceH+subH-14);
+  x.strokeStyle='rgba(201,162,75,.4)';x.lineWidth=1.5;
+  x.beginPath();x.moveTo(pad,priceTop+priceH+subH+4);x.lineTo(bw-pad,priceTop+priceH+subH+4);x.stroke();
+  const by=boxH-bottomH;
+  x.save();rr(x,0,0,bw,boxH,26);x.clip();x.fillStyle=GOLD;x.fillRect(0,by,bw,bottomH);x.restore();
+  x.fillStyle=NAVY;F('700 26px');
+  const totalW=x.measureText(bottomText).width+34,startX=bw/2-totalW/2;
+  drawFlame(x,startX+14,by+bottomH/2,22,NAVY);
+  x.textAlign='left';x.textBaseline='middle';x.fillText(bottomText,startX+34,by+bottomH/2+1);
+  x.textBaseline='alphabetic';x.restore();
+  return{w:bw,h:boxH};
+}
+function drawArtV2(x,S,p,bgImg,logoImg){
+  const GOLD=getGold(),NAVY=getComputedStyle(document.documentElement).getPropertyValue('--brand-deep').trim()||'#063a63';
+  if(bgImg)drawCover(x,bgImg,S,S);else paintBrand(x,S,NAVY);
+  const g=x.createLinearGradient(0,0,0,S);
+  g.addColorStop(0,'rgba(4,24,42,.55)');g.addColorStop(.35,'rgba(4,24,42,.15)');
+  g.addColorStop(.6,'rgba(4,24,42,.55)');g.addColorStop(1,'rgba(4,24,42,.96)');
+  x.fillStyle=g;x.fillRect(0,0,S,S);
+  const M=S*.067;let y=S*.067;
+  const b1=drawBadgeOutline(x,M,y,'AÉREO + HOSPEDAGEM','plane',GOLD);y+=b1.h+18;
+  const r2=16;
+  x.strokeStyle=GOLD;x.lineWidth=2;x.beginPath();x.arc(M+r2,y+r2,r2,0,Math.PI*2);x.stroke();
+  drawStar(x,M+r2,y+r2,9,4,GOLD);
+  x.fillStyle=GOLD;x.font='700 26px system-ui,sans-serif';x.textAlign='left';x.textBaseline='middle';
+  x.fillText('PACOTE COMPLETO',M+r2*2+16,y+r2+1);x.textBaseline='alphabetic';
+  y+=r2*2+34;
+  let title=(p.dest||'').toUpperCase(),fsize=132;
+  x.font=`800 ${fsize}px system-ui,sans-serif`;const maxW=S-M*2-40;
+  while(x.measureText(title).width>maxW&&fsize>60){fsize-=4;x.font=`800 ${fsize}px system-ui,sans-serif`;}
+  x.fillStyle='#fff';x.textAlign='left';x.textBaseline='alphabetic';
+  x.fillText(title,M,y+fsize*.78);y+=fsize*.78+26;
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2;x.beginPath();x.moveTo(M,y);x.lineTo(M+560,y);x.stroke();
+  y+=44;
+  const lines=[['cal',p.date],['plane','Ida e volta · '+(p.origin||'')],['bed2',p.hotel],['meal2',p.meal]].filter(l=>l[1]);
+  const rowR=24;
+  lines.forEach((l,idx)=>{
+    x.strokeStyle=GOLD;x.lineWidth=2;x.beginPath();x.arc(M+rowR,y+rowR,rowR,0,Math.PI*2);x.stroke();
+    drawIconC(x,l[0],M+rowR,y+rowR,24,GOLD);
+    x.font='500 34px system-ui,sans-serif';x.fillStyle='#fff';x.textAlign='left';x.textBaseline='middle';
+    x.fillText(l[1],M+rowR*2+22,y+rowR+2);x.textBaseline='alphabetic';
+    const rowH=rowR*2+30;
+    if(idx<lines.length-1){x.strokeStyle='rgba(201,162,75,.35)';x.lineWidth=1.5;
+      x.beginPath();x.moveTo(M,y+rowH-6);x.lineTo(M+620,y+rowH-6);x.stroke();}
+    y+=rowH;
+  });
+  y+=18;
+  drawPriceV2(x,p,y,M,GOLD,NAVY);
+  if(logoImg){const lh=100,lw=logoImg.width*(lh/logoImg.height);
+    x.drawImage(logoImg,S-M-lw,S-M-lh,lw,lh);}
 }
 function markText(x,S,P){x.textAlign='right';x.font='800 34px system-ui,sans-serif';x.fillStyle='#fff';
   x.fillText((settings.name||'JORNADA360'),S-P,P+22);
