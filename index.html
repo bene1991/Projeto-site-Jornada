@@ -8,6 +8,9 @@
 <meta name="keywords" content="agência de viagem, pacotes de viagem, promoção de viagem, Rio Preto, São José do Rio Preto, aéreo e hospedagem, Jornada360, viagens parceladas">
 <meta name="author" content="Jornada360 Agência de Viagem">
 <meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#08518b">
 <link rel="canonical" href="https://jornada360viagens.com.br/">
 <!-- Open Graph (WhatsApp, Facebook, Instagram) -->
@@ -1262,11 +1265,22 @@ function drawArt(x,S,p,L,bgImg,logoImg){
   B.price={x:L.price.x*S,y:L.price.y*S,w:pb.w*ps,h:pb.h*ps};
   return B;
 }
+let fontsReadyP=null;
+function ensureArtFonts(){
+  if(!fontsReadyP)fontsReadyP=Promise.all([
+    document.fonts.load('400 132px Anton'),
+    document.fonts.load('800 84px Poppins'),
+    document.fonts.load('700 26px Poppins'),
+    document.fonts.load('600 26px Poppins'),
+    document.fonts.load('500 34px Poppins')
+  ]).catch(()=>null);
+  return fontsReadyP;
+}
 async function buildArt(p){
   const S=1080,c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');
   const bg=p.img?await loadImg(p.img).catch(()=>null):null;
   const lg=(settings.artLogo||settings.logo)?await loadImg(settings.artLogo||settings.logo).catch(()=>null):null;
-  if(p.style==='v2')drawArtV2(x,S,p,bg,lg);
+  if(p.style==='v2'){await ensureArtFonts();drawArtV2(x,S,p,bg,lg);}
   else drawArt(x,S,p,normLayout(p.layout),bg,lg);
   return c;
 }
@@ -1287,7 +1301,7 @@ function drawFlame(x,cx,cy,size,color){
   x.closePath();x.fill();x.restore();
 }
 function drawBadgeOutline(x,tx,ty,text,iconName,color){
-  x.font='700 28px system-ui,sans-serif';const tw=x.measureText(text).width;
+  x.font='700 28px Poppins,system-ui,sans-serif';const tw=x.measureText(text).width;
   const iconSize=26,gap=14,padX=26,padY=16;
   const w=padX*2+iconSize+gap+tw,h=iconSize+padY*2;
   x.fillStyle='rgba(4,24,42,.35)';rr(x,tx,ty,w,h,h/2);x.fill();
@@ -1299,7 +1313,7 @@ function drawBadgeOutline(x,tx,ty,text,iconName,color){
 }
 function drawPriceV2(x,p,boxY,boxX,GOLD,NAVY){
   const parts=(p.price||'0,00').split(','),reais=parts[0],cents=','+(parts[1]||'00');
-  const F=f=>x.font=f+' system-ui,sans-serif';
+  const F=f=>x.font=f+' Poppins,system-ui,sans-serif';
   F('800 84px');const bigW=x.measureText(reais).width;
   F('800 34px');const centsW=x.measureText(cents).width;
   F('700 26px');const xrsW=Math.max(x.measureText((p.x||'10')+'x').width,x.measureText('R$').width);
@@ -1313,7 +1327,7 @@ function drawPriceV2(x,p,boxY,boxX,GOLD,NAVY){
   x.save();x.translate(boxX,boxY);
   x.fillStyle=NAVY;rr(x,0,0,bw,boxH,26);x.fill();
   x.fillStyle=GOLD;rr(x,pad,tagPadTop,tagW,tagH,tagH/2);x.fill();
-  x.fillStyle=NAVY;x.font='700 24px system-ui,sans-serif';x.textAlign='left';x.textBaseline='middle';
+  x.fillStyle=NAVY;x.font='700 24px Poppins,system-ui,sans-serif';x.textAlign='left';x.textBaseline='middle';
   x.fillText(tagText,pad+20,tagPadTop+tagH/2+1);x.textBaseline='alphabetic';
   const py=priceTop+priceH*.72;
   x.fillStyle='#fff';x.textAlign='left';
@@ -1327,7 +1341,7 @@ function drawPriceV2(x,p,boxY,boxX,GOLD,NAVY){
   x.beginPath();x.moveTo(pad,priceTop+priceH+subH+4);x.lineTo(bw-pad,priceTop+priceH+subH+4);x.stroke();
   const by=boxH-bottomH;
   x.save();rr(x,0,0,bw,boxH,26);x.clip();x.fillStyle=GOLD;x.fillRect(0,by,bw,bottomH);x.restore();
-  x.fillStyle=NAVY;F('700 26px');
+  x.fillStyle=NAVY;x.font='700 26px Poppins,system-ui,sans-serif';
   const totalW=x.measureText(bottomText).width+34,startX=bw/2-totalW/2;
   drawFlame(x,startX+14,by+bottomH/2,22,NAVY);
   x.textAlign='left';x.textBaseline='middle';x.fillText(bottomText,startX+34,by+bottomH/2+1);
@@ -1346,26 +1360,27 @@ function drawArtV2(x,S,p,bgImg,logoImg){
   const r2=16;
   x.strokeStyle=GOLD;x.lineWidth=2;x.beginPath();x.arc(M+r2,y+r2,r2,0,Math.PI*2);x.stroke();
   drawStar(x,M+r2,y+r2,9,4,GOLD);
-  x.fillStyle=GOLD;x.font='700 26px system-ui,sans-serif';x.textAlign='left';x.textBaseline='middle';
+  x.fillStyle=GOLD;x.font='700 26px Poppins,system-ui,sans-serif';x.textAlign='left';x.textBaseline='middle';
   x.fillText('PACOTE COMPLETO',M+r2*2+16,y+r2+1);x.textBaseline='alphabetic';
-  y+=r2*2+34;
-  let title=(p.dest||'').toUpperCase(),fsize=132;
-  x.font=`800 ${fsize}px system-ui,sans-serif`;const maxW=S-M*2-40;
-  while(x.measureText(title).width>maxW&&fsize>60){fsize-=4;x.font=`800 ${fsize}px system-ui,sans-serif`;}
+  y+=r2*2+38;
+  let title=(p.dest||'').toUpperCase(),fsize=148;
+  x.font=`400 ${fsize}px Anton,system-ui,sans-serif`;const maxW=S-M*2-40;
+  while(x.measureText(title).width>maxW&&fsize>60){fsize-=4;x.font=`400 ${fsize}px Anton,system-ui,sans-serif`;}
   x.fillStyle='#fff';x.textAlign='left';x.textBaseline='alphabetic';
-  x.fillText(title,M,y+fsize*.78);y+=fsize*.78+26;
-  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2;x.beginPath();x.moveTo(M,y);x.lineTo(M+560,y);x.stroke();
-  y+=44;
+  x.fillText(title,M,y+fsize*.72);y+=fsize*.72+30;
+  const infoW=S-M*2;
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2;x.beginPath();x.moveTo(M,y);x.lineTo(M+infoW*.52,y);x.stroke();
+  y+=42;
   const lines=[['cal',p.date],['plane','Ida e volta · '+(p.origin||'')],['bed2',p.hotel],['meal2',p.meal]].filter(l=>l[1]);
-  const rowR=24;
+  const rowR=23;
   lines.forEach((l,idx)=>{
     x.strokeStyle=GOLD;x.lineWidth=2;x.beginPath();x.arc(M+rowR,y+rowR,rowR,0,Math.PI*2);x.stroke();
-    drawIconC(x,l[0],M+rowR,y+rowR,24,GOLD);
-    x.font='500 34px system-ui,sans-serif';x.fillStyle='#fff';x.textAlign='left';x.textBaseline='middle';
+    drawIconC(x,l[0],M+rowR,y+rowR,23,GOLD);
+    x.font='500 32px Poppins,system-ui,sans-serif';x.fillStyle='#fff';x.textAlign='left';x.textBaseline='middle';
     x.fillText(l[1],M+rowR*2+22,y+rowR+2);x.textBaseline='alphabetic';
-    const rowH=rowR*2+30;
-    if(idx<lines.length-1){x.strokeStyle='rgba(201,162,75,.35)';x.lineWidth=1.5;
-      x.beginPath();x.moveTo(M,y+rowH-6);x.lineTo(M+620,y+rowH-6);x.stroke();}
+    const rowH=rowR*2+28;
+    if(idx<lines.length-1){x.strokeStyle='rgba(255,255,255,.18)';x.lineWidth=1.5;
+      x.beginPath();x.moveTo(M,y+rowH-4);x.lineTo(M+infoW,y+rowH-4);x.stroke();}
     y+=rowH;
   });
   y+=18;
