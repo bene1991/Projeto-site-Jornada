@@ -1350,11 +1350,17 @@ function drawPriceV2(x,p,boxY,boxX,GOLD,NAVY){
 }
 function drawArtV2(x,S,p,bgImg,logoImg){
   const GOLD=getGold(),NAVY=getComputedStyle(document.documentElement).getPropertyValue('--brand-deep').trim()||'#063a63';
-  if(bgImg)drawCover(x,bgImg,S,S);else paintBrand(x,S,NAVY);
+  if(bgImg){x.save();x.filter='saturate(1.25) contrast(1.12) brightness(1.04)';drawCover(x,bgImg,S,S);x.filter='none';x.restore();}
+  else paintBrand(x,S,NAVY);
+  // degradê vertical: topo fica vívido (sem escurecer), só a base escurece pra dar contraste no preço
   const g=x.createLinearGradient(0,0,0,S);
-  g.addColorStop(0,'rgba(4,24,42,.55)');g.addColorStop(.35,'rgba(4,24,42,.15)');
-  g.addColorStop(.6,'rgba(4,24,42,.55)');g.addColorStop(1,'rgba(4,24,42,.96)');
+  g.addColorStop(0,'rgba(4,24,42,0)');g.addColorStop(.42,'rgba(4,24,42,0)');
+  g.addColorStop(.62,'rgba(4,24,42,.4)');g.addColorStop(1,'rgba(4,24,42,.92)');
   x.fillStyle=g;x.fillRect(0,0,S,S);
+  // leve escurecida à esquerda (onde fica o texto), sem tocar no lado direito da foto
+  const gh=x.createLinearGradient(0,0,S*.66,0);
+  gh.addColorStop(0,'rgba(4,24,42,.4)');gh.addColorStop(1,'rgba(4,24,42,0)');
+  x.fillStyle=gh;x.fillRect(0,0,S*.66,S);
   const M=S*.067;let y=S*.067;
   const b1=drawBadgeOutline(x,M,y,'AÉREO + HOSPEDAGEM','plane',GOLD);y+=b1.h+18;
   const r2=16;
